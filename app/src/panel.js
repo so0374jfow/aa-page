@@ -122,6 +122,20 @@ function renderElementDetail(slot, el) {
     html += `</div>`;
   }
 
+  // 3D Model status
+  html += `<div class="section-title">3D Model</div>`;
+  if (el.mesh_url) {
+    html += `<div style="color:#2e7d32">&#10003; GLB mesh generated</div>`;
+  } else {
+    const eligible = ['APPROVED','NEGOTIATING','PURCHASED','SHIPPED','RECEIVED','ALLOCATED','INSTALLED'].includes(el.status)
+      || (el.status === 'ASSESSED' && !el.architect_review_flag);
+    if (eligible) {
+      html += `<div style="color:#cc9933">Eligible for generation</div>`;
+    } else {
+      html += `<div style="color:#999">Not yet eligible</div>`;
+    }
+  }
+
   // Price breakdown
   if (el.asking_price_chf != null) {
     html += `<div class="section-title">Purchase (CHF)</div>`;

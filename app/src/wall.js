@@ -1,10 +1,13 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { EMPTY_COLOR, EDGE_COLOR, getElementColor } from './colors.js';
 
 const MM_TO_UNITS = 0.001; // 1mm = 0.001 scene units
 
 // Map: slotId → { mesh, edges, slot, element }
 export const slotMeshes = new Map();
+
+const gltfLoader = new GLTFLoader();
 
 export function buildWall(scene, slotsData, elementsData) {
   const elementMap = new Map();
@@ -19,6 +22,11 @@ export function buildWall(scene, slotsData, elementsData) {
     const entry = createSlotMesh(slot, element);
     scene.add(entry.group);
     slotMeshes.set(slot.id, entry);
+
+    // Async-load GLB if mesh_url is set
+    if (element?.mesh_url) {
+      loadMeshForSlot(entry, element.mesh_url);
+    }
   }
 }
 
@@ -62,7 +70,7 @@ function createSlotMesh(slot, element) {
   const group = new THREE.Group();
   group.add(mesh);
 
-  // White edge outline for filled slots
+  // Edge outline for filled slots
   let edges = null;
   if (!isEmpty) {
     const edgeGeo = new THREE.EdgesGeometry(geometry);
@@ -92,6 +100,74 @@ function createSlotMesh(slot, element) {
   return { mesh, edges, group, violationOverlay, slot, element, isEmpty };
 }
 
+/**
+ * Async-load a GLB model and replace the placeholder box in the slot.
+ * Falls back silently to the colored box if loading fails.
+ */
+function loadMeshForSlot(entry, meshPath) {
+  // Resolve URL: relative path works for both dev (public/) and production
+  const url = `./${meshPath}`;
+
+  gltfLoader.load(
+    url,
+    (gltf) => {
+      const model = gltf.scene;
+
+      // Compute bounding box of loaded model
+      const bbox = new THREE.Box3().setFromObject(model);
+      const modelSize = new THREE.Vector3();
+      bbox.getSize(modelSize);
+      const modelCenter = new THREE.Vector3();
+      bbox.getCenter(modelCenter);
+
+      // Use element's most accurate dimensions (actual > estimated > slot)
+      const el = entry.element;
+      const dim = el?.dimensions_actual || el?.dimensions_estimated || entry.slot.dimensions;
+      const w = dim.width * MM_TO_UNITS;
+      const h = dim.height * MM_TO_UNITS;
+      const d = dim.depth * MM_TO_UNITS;
+
+      // Scale model to fit element's real dimensions
+      const scaleX = modelSize.x > 0 ? w / modelSize.x : 1;
+      const scaleY = modelSize.y > 0 ? h / modelSize.y : 1;
+      const scaleZ = modelSize.z > 0 ? d / modelSize.z : 1;
+      const scale = Math.min(scaleX, scaleY, scaleZ) * 0.95;
+      model.scale.setScalar(scale);
+
+      // Position at slot center
+      model.position.copy(entry.mesh.position);
+      // Offset so model center aligns with slot center
+      model.position.x -= modelCenter.x * scale;
+      model.position.y -= modelCenter.y * scale;
+      model.position.z -= modelCenter.z * scale;
+
+      // Apply element color to all mesh materials
+      const color = getElementColor(entry.element);
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshStandardMaterial({
+            color,
+            roughness: 0.6,
+            metalness: 0.15
+          });
+          child.userData = { slotId: entry.slot.id };
+        }
+      });
+
+      // Replace box with loaded model
+      entry.group.remove(entry.mesh);
+      entry.group.add(model);
+      entry.mesh = model; // Update reference (for raycasting)
+      entry.hasGLB = true;
+    },
+    undefined, // onProgress
+    (error) => {
+      // Silent fallback — keep the colored box
+      console.warn(`GLB load failed for ${entry.slot.id}: ${error.message}`);
+    }
+  );
+}
+
 export function updateSlotElement(scene, slotId, slot, element) {
   const existing = slotMeshes.get(slotId);
   if (existing) {
@@ -101,6 +177,12 @@ export function updateSlotElement(scene, slotId, slot, element) {
   const entry = createSlotMesh(slot, element);
   scene.add(entry.group);
   slotMeshes.set(slotId, entry);
+
+  // Load GLB if available
+  if (element?.mesh_url) {
+    loadMeshForSlot(entry, element.mesh_url);
+  }
+
   return entry;
 }
 
@@ -136,6 +218,7 @@ export function animateNewElement(entry, duration = 600) {
 export function animateColorChange(entry, newColor, duration = 400) {
   if (entry.isEmpty) return;
   const mat = entry.mesh.material;
+  if (!mat?.color) return;
   const startColor = mat.color.clone();
   const endColor = new THREE.Color(newColor);
   const start = performance.now();
@@ -162,7 +245,7 @@ export function unregisterPendingPulse(entry) {
 
 export function updatePulses(time) {
   for (const entry of pendingSlots) {
-    if (entry.mesh.material.emissive) {
+    if (entry.mesh.material?.emissive) {
       const pulse = 0.1 + 0.15 * Math.sin(time * 2);
       entry.mesh.material.emissiveIntensity = pulse;
       entry.mesh.material.emissive.setHex(0xddcc33);
