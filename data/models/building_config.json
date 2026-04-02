@@ -1,0 +1,40 @@
+{
+  "_comment": "Alignment config — maps IFC building geometry to the spolia wall levels.",
+  "_usage": "Update these values when uploading a new IFC/GLB. Measurements in mm.",
+
+  "balcony_levels": [
+    {
+      "name": "level-1",
+      "label": "Ground floor balcony",
+      "ifc_railing_y_mm": 0,
+      "railing_height_mm": 1000
+    },
+    {
+      "name": "level-2",
+      "label": "First floor balcony",
+      "ifc_railing_y_mm": 3500,
+      "railing_height_mm": 1000
+    },
+    {
+      "name": "level-3",
+      "label": "Second floor balcony",
+      "ifc_railing_y_mm": 7000,
+      "railing_height_mm": 1000
+    }
+  ],
+
+  "railing_length_mm": 20000,
+
+  "north_facade": {
+    "_comment": "Z position of the north facade outer surface in IFC coordinates. The wall face sits here; building extends behind (+Z).",
+    "ifc_z_mm": 0
+  },
+
+  "building_transform": {
+    "_comment": "Additional transform applied to the IFC model after alignment. Use for fine-tuning.",
+    "offset_x_mm": 0,
+    "offset_y_mm": 0,
+    "offset_z_mm": 500,
+    "rotation_y_deg": 0
+  }
+}

@@ -4,39 +4,35 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 /**
  * Building model loader — renders an IFC or GLB model behind the spolia wall.
  *
- * Supports:
- * - Auto-load from data/models/building.ifc or building.glb
- * - Drag-and-drop .ifc or .glb files onto the page
- * - Toggle visibility with B key
+ * Reads building_config.json to align the building so its balcony railings
+ * match the Three.js wall level positions. This makes it adaptive to any
+ * IFC/GLB file — just update the config with the new balcony heights.
  *
- * IFC loading uses web-ifc (dynamically imported, only loaded when needed).
- * GLB loading uses the standard Three.js GLTFLoader.
+ * Upload your file to: data/models/building.glb (or building.ifc)
+ * Edit alignment:      data/models/building_config.json
  */
 
 let buildingGroup = null;
 let buildingVisible = true;
 let scene = null;
+let buildingConfig = null;
 
+const MM = 0.001; // mm to Three.js units
+
+const CONFIG_PATH = './data/models/building_config.json';
 const BUILDING_PATH_GLB = './data/models/building.glb';
 const BUILDING_PATH_IFC = './data/models/building.ifc';
-
-// The wall sits at z=0 with depths extending into +z.
-// The building goes behind the wall (further +z).
-const BUILDING_OFFSET_Z = 0.5; // 500mm behind wall face
 
 export function initBuilding(sceneRef) {
   scene = sceneRef;
 
-  // Create container group
   buildingGroup = new THREE.Group();
   buildingGroup.name = 'building';
-  buildingGroup.position.z = BUILDING_OFFSET_Z;
   scene.add(buildingGroup);
 
-  // Try auto-loading building model
-  tryAutoLoad();
+  // Load config first, then try to load the building model
+  loadConfig().then(() => tryAutoLoad());
 
-  // Set up drag-and-drop
   initDragDrop();
 }
 
@@ -52,6 +48,87 @@ export function isBuildingVisible() {
 
 export function hasBuildingModel() {
   return buildingGroup && buildingGroup.children.length > 0;
+}
+
+/**
+ * Returns the loaded building config, or null if not loaded.
+ * Other modules (like generate_slots.mjs) use this to get balcony heights.
+ */
+export function getBuildingConfig() {
+  return buildingConfig;
+}
+
+/**
+ * Returns the wall level base-Y positions in mm, derived from the config.
+ * Falls back to hardcoded defaults if no config is loaded.
+ */
+export function getLevelBaseHeights() {
+  if (buildingConfig?.balcony_levels) {
+    return buildingConfig.balcony_levels.map(l => ({
+      name: l.name,
+      label: l.label,
+      baseY: l.ifc_railing_y_mm,
+      railingHeight: l.railing_height_mm || 1000,
+    }));
+  }
+  // Defaults matching the original generate_slots.mjs
+  return [
+    { name: 'level-1', label: 'Ground floor', baseY: 0, railingHeight: 1000 },
+    { name: 'level-2', label: 'First floor', baseY: 3500, railingHeight: 1000 },
+    { name: 'level-3', label: 'Second floor', baseY: 7000, railingHeight: 1000 },
+  ];
+}
+
+// ── Config Loading ──
+
+async function loadConfig() {
+  try {
+    const resp = await fetch(CONFIG_PATH);
+    if (resp.ok) {
+      buildingConfig = await resp.json();
+      console.log('Building config loaded:', buildingConfig);
+    }
+  } catch (_) {
+    console.log('No building_config.json found, using defaults');
+  }
+}
+
+// ── Alignment Transform ──
+
+/**
+ * Computes and applies the transform that aligns the IFC building
+ * with the Three.js wall coordinates.
+ *
+ * The wall levels in Three.js are at Y positions defined by slots.json.
+ * The building_config.json tells us where the balconies are in IFC space.
+ * We compute the offset so they match.
+ */
+function applyAlignmentTransform() {
+  if (!buildingConfig) {
+    // No config — just offset behind the wall
+    buildingGroup.position.set(0, 0, 0.5);
+    return;
+  }
+
+  const t = buildingConfig.building_transform || {};
+  const facade = buildingConfig.north_facade || {};
+
+  // Compute offset: IFC railing Y=0 should map to Three.js Y=0
+  // (slots.json level-1 baseY is 0, so no Y offset needed by default)
+  // If the IFC has level-1 at a different Y, we'd offset.
+  // For now, we assume the config's ifc_railing_y_mm values ARE the Three.js Y positions
+  // (since generate_slots.mjs reads the same config).
+
+  const offsetX = (t.offset_x_mm || 0) * MM;
+  const offsetY = (t.offset_y_mm || 0) * MM;
+  const offsetZ = (t.offset_z_mm || 500) * MM;
+  const facadeZ = (facade.ifc_z_mm || 0) * MM;
+
+  buildingGroup.position.set(offsetX, offsetY, facadeZ + offsetZ);
+
+  if (t.rotation_y_deg) {
+    buildingGroup.rotation.y = (t.rotation_y_deg * Math.PI) / 180;
+  }
 }
 
 // ── Auto-load ──
@@ -86,9 +163,9 @@ function loadGLB(url) {
       url,
       (gltf) => {
         clearBuilding();
-        const model = gltf.scene;
-        buildingGroup.add(model);
-        console.log('Building GLB loaded');
+        buildingGroup.add(gltf.scene);
+        applyAlignmentTransform();
+        logBuildingInfo(gltf.scene);
         resolve();
       },
       undefined,
@@ -107,8 +184,8 @@ async function loadIFC(data) {
   try {
     WebIFC = await import('web-ifc');
   } catch (e) {
-    console.warn('web-ifc not available. Install it with: npm install web-ifc');
-    console.warn('Alternatively, convert your IFC to GLB and place at data/models/building.glb');
+    console.warn('web-ifc not available. Install with: npm install web-ifc');
+    console.warn('Or convert your IFC to GLB and place at data/models/building.glb');
     return;
   }
 
@@ -173,13 +250,10 @@ async function loadIFC(data) {
       });
 
       const mesh = new THREE.Mesh(bufferGeom, material);
-
-      // Apply IFC placement transform
       const mat4 = new THREE.Matrix4().fromArray(placedGeom.flatTransformation);
       mesh.applyMatrix4(mat4);
 
       meshGroup.add(mesh);
-
       geometry.delete();
     }
   }
@@ -188,7 +262,29 @@ async function loadIFC(data) {
 
   clearBuilding();
   buildingGroup.add(meshGroup);
-  console.log(`IFC loaded: ${flatMeshes.size()} elements`);
+  applyAlignmentTransform();
+  logBuildingInfo(meshGroup);
+}
+
+function logBuildingInfo(model) {
+  const bbox = new THREE.Box3().setFromObject(model);
+  const size = new THREE.Vector3();
+  bbox.getSize(size);
+  const center = new THREE.Vector3();
+  bbox.getCenter(center);
+
+  console.log('Building loaded:');
+  console.log(`  Size: ${(size.x / MM).toFixed(0)} x ${(size.y / MM).toFixed(0)} x ${(size.z / MM).toFixed(0)} mm`);
+  console.log(`  Center: (${(center.x / MM).toFixed(0)}, ${(center.y / MM).toFixed(0)}, ${(center.z / MM).toFixed(0)}) mm`);
+  console.log(`  Bounding box: (${(bbox.min.x / MM).toFixed(0)}, ${(bbox.min.y / MM).toFixed(0)}, ${(bbox.min.z / MM).toFixed(0)}) to (${(bbox.max.x / MM).toFixed(0)}, ${(bbox.max.y / MM).toFixed(0)}, ${(bbox.max.z / MM).toFixed(0)}) mm`);
+
+  if (buildingConfig) {
+    const levels = buildingConfig.balcony_levels;
+    console.log('  Balcony alignment:');
+    for (const l of levels) {
+      console.log(`    ${l.name} (${l.label}): railing at Y=${l.ifc_railing_y_mm}mm, height=${l.railing_height_mm}mm`);
+    }
+  }
 }
 
 // ── Drag & Drop ──
@@ -232,7 +328,6 @@ function initDragDrop() {
     if (name.endsWith('.ifc')) {
       await loadIFC(data);
     } else if (name.endsWith('.glb') || name.endsWith('.gltf')) {
-      // Create a blob URL for the GLTFLoader
       const blob = new Blob([data], { type: 'model/gltf-binary' });
       const url = URL.createObjectURL(blob);
       await loadGLB(url);

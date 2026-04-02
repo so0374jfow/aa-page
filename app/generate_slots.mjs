@@ -2,6 +2,15 @@
 // Uses a free-form placement: no rows, no shelves, no skyline.
 // Places objects into a 2D grid bitmap, finding gaps randomly.
 // Run: node generate_slots.mjs > ../data/slots.json
+//
+// Reads balcony heights from data/models/building_config.json when available,
+// so slot positions adapt to the actual IFC building model.
+
+import { readFileSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -39,11 +48,31 @@ function slotType(w, h) {
   return 'C';
 }
 
-const STORIES = [
-  { name: 'level-1', label: 'Ground floor',  baseY: 0 },
-  { name: 'level-2', label: 'First floor',   baseY: 3500 },
-  { name: 'level-3', label: 'Second floor',  baseY: 7000 },
-];
+// Load balcony heights from building_config.json if available
+function loadStories() {
+  const configPath = resolve(__dirname, '../data/models/building_config.json');
+  try {
+    const config = JSON.parse(readFileSync(configPath, 'utf-8'));
+    if (config.balcony_levels?.length) {
+      process.stderr.write(`Reading balcony levels from building_config.json\n`);
+      return config.balcony_levels.map(l => ({
+        name: l.name,
+        label: l.label,
+        baseY: l.ifc_railing_y_mm,
+        railingHeight: l.railing_height_mm || 1000,
+      }));
+    }
+  } catch (_) {
+    process.stderr.write(`No building_config.json found, using default floor heights\n`);
+  }
+  return [
+    { name: 'level-1', label: 'Ground floor',  baseY: 0, railingHeight: 1000 },
+    { name: 'level-2', label: 'First floor',   baseY: 3500, railingHeight: 1000 },
+    { name: 'level-3', label: 'Second floor',  baseY: 7000, railingHeight: 1000 },
+  ];
+}
+
+const STORIES = loadStories();
 
 /**
  * Bitmap-based free packing.
@@ -54,7 +83,7 @@ const STORIES = [
  */
 function packRailing(story, storyIndex) {
   const W = 20000;
-  const H = 1000;
+  const H = story.railingHeight || 1000;
   const RES = 5; // mm per pixel
   const gridW = Math.ceil(W / RES);
   const gridH = Math.ceil(H / RES);

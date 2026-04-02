@@ -167,6 +167,16 @@ The generated GLB is scaled to the element's most accurate dimensions (`dimensio
 
 Place an IFC or GLB file at `data/models/building.ifc` or `data/models/building.glb` to render the building behind the wall. The model loads automatically. Users can also drag-and-drop .ifc or .glb files onto the page. Toggle visibility with `B` key.
 
+**Alignment config** (`data/models/building_config.json`): Defines the mapping between the IFC building's balcony positions and the Three.js wall levels. When uploading a new IFC:
+
+1. Place the file at `data/models/building.glb` (or `.ifc`)
+2. Edit `building_config.json` with the actual balcony railing Y-heights (in mm) from your IFC model
+3. Set `north_facade.ifc_z_mm` to the Z position of the north facade
+4. Adjust `building_transform` offsets to fine-tune positioning
+5. Run `node app/generate_slots.mjs > data/slots.json` to regenerate the wall grid at the correct heights
+
+The config is the single source of truth for alignment. Both the Three.js renderer and the slot generator read from it.
+
 ## Git Conventions
 
 - Agent commits follow format: `STATUS EL-XXXX subcategory platform`
