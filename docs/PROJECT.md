@@ -124,6 +124,18 @@ Any non-terminal state → REJECTED (terminal)
 
 Elements with `"demo": true` are fictional test data. They render at 60% opacity in the 3D wall and show a "DEMO — FICTIONAL ELEMENT" banner in the detail panel. The HUD counts them separately. They should be removed before production use.
 
+Five demo elements have GLB meshes from the [Khronos glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets) (CC0/CC-BY), chosen to match material categories:
+
+| Element | Category | GLB Source | Rationale |
+|---------|----------|------------|-----------|
+| EL-0001 | CAT-A (ceramic) | PotOfCoals | Ceramic vessel |
+| EL-0002 | CAT-B (metal) | DamagedHelmet | Distressed metalwork |
+| EL-0003 | CAT-A (stone) | IridescentDishWithOlives | Ceramic dish |
+| EL-0004 | CAT-E (wood) | SheenChair | Domestic furniture |
+| EL-0007 | CAT-C (glass) | GlassBrokenWindow | Broken glass panel |
+
+The other 5 demo elements render as colored boxes (no mesh). In production, `generate_mesh.py` creates real GLBs from seller photos via fal.ai TripoSR.
+
 ---
 
 ## The 3D Wall
@@ -172,6 +184,20 @@ The wall auto-updates every 30 seconds:
 5. PENDING_REVIEW: registers yellow pulse animation
 
 Manual refresh: press `R` key.
+
+### Live Data Architecture
+
+The deployed site uses a **hybrid** data strategy:
+
+| Asset | Source | Update latency | Needs redeploy? |
+|-------|--------|---------------|-----------------|
+| elements.json / slots.json | Polled from `raw.githubusercontent.com` | ~30 seconds | No |
+| GLB meshes | Static files from GitHub Pages | ~2 min (deploy) | Yes (auto-triggered) |
+| App code (JS/CSS) | Static files from GitHub Pages | ~2 min (deploy) | Yes (auto-triggered) |
+
+**How it works in practice**: When Antoine commits to `main`, the deploy workflow triggers automatically (on `app/**` or `data/**` changes). JSON data changes appear live within 30s via polling — before the deploy even finishes. New GLB files become available after the ~2 min deploy. During the gap, `wall.js` falls back to the colored box silently.
+
+**Antoine doesn't need to think about deployment.** Just commit and push to `main`.
 
 ---
 
@@ -279,6 +305,16 @@ Triggers on push to `main` affecting `app/`, `data/`, or the workflow file.
 4. Copy `data/` → `app/public/data/`
 5. `npm run build` (Vite → `app/dist/`)
 6. Deploy `app/dist/` to `gh-pages` branch via `peaceiris/actions-gh-pages@v4`
+
+### What Triggers a Deploy
+
+Any push to `main` that touches `app/`, `data/`, or `.github/workflows/deploy.yml`. This means:
+- Antoine's `add_element.py` commit (touches `data/elements.json`) → triggers deploy
+- Antoine's `generate_mesh.py` commit (touches `data/meshes/` + `data/elements.json`) → triggers deploy
+- Antoine's `assign_slot.py` commit (touches `data/elements.json` + `data/slots.json`) → triggers deploy
+- App code changes → triggers deploy
+
+**Important**: JSON data changes are visible to users within 30s via live polling, even before the deploy finishes. The deploy is only needed for new static assets (GLBs, images) and app code changes.
 
 ### Local Development
 

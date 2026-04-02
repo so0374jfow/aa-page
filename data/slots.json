@@ -16,8 +16,8 @@
       },
       "height_m": 0.54,
       "fire_zone": 1,
-      "status": "empty",
-      "element_id": null,
+      "status": "occupied",
+      "element_id": "EL-0001",
       "adjacent": [
         "SLOT-L1-327",
         "SLOT-L1-561",
@@ -1060,8 +1060,8 @@
       },
       "height_m": 0.47,
       "fire_zone": 1,
-      "status": "empty",
-      "element_id": null,
+      "status": "occupied",
+      "element_id": "EL-0003",
       "adjacent": [
         "SLOT-L1-1179",
         "SLOT-L1-1349",
@@ -1242,8 +1242,8 @@
       },
       "height_m": 0.705,
       "fire_zone": 1,
-      "status": "empty",
-      "element_id": null,
+      "status": "occupied",
+      "element_id": "EL-0002",
       "adjacent": [
         "SLOT-L1-433",
         "SLOT-L1-1801",
@@ -80302,8 +80302,8 @@
       },
       "height_m": 4.175,
       "fire_zone": 2,
-      "status": "empty",
-      "element_id": null,
+      "status": "occupied",
+      "element_id": "EL-0007",
       "adjacent": [
         "SLOT-L2-578",
         "SLOT-L2-1677",

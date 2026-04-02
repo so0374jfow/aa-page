@@ -110,6 +110,16 @@ Calls fal.ai TripoSR to generate GLB from element photos. Eligible when APPROVED
 
 SCOUTED → ASSESSED → PENDING_REVIEW → APPROVED → NEGOTIATING → PURCHASED → SHIPPED → RECEIVED → ALLOCATED → INSTALLED (terminal). REJECTED reachable from any state.
 
+### Live Data Architecture
+
+The deployed site uses a **hybrid** data strategy:
+
+- **JSON data (elements.json, slots.json)**: Polled live every 30s from `raw.githubusercontent.com/main` — **no redeploy needed**. When Antoine commits a status change or new element, the 3D wall picks it up within 30 seconds.
+- **GLB meshes**: Served as static files from GitHub Pages — **require redeploy**. The deploy workflow triggers automatically on any push to `main` touching `data/**`, so Antoine's mesh commits deploy within ~2 minutes.
+- **Graceful gap**: There's a ~2 min window after a mesh commit where the JSON references a GLB that isn't deployed yet. `wall.js` handles this silently — the colored box fallback remains until the GLB becomes available on the next page load after deploy.
+
+Bottom line: Antoine just commits to `main`. JSON changes appear live in 30s, new GLBs deploy automatically in ~2 min.
+
 ### 3D Mesh Pipeline
 
 Elements become eligible for mesh generation when:
@@ -117,6 +127,13 @@ Elements become eligible for mesh generation when:
 - Status is ASSESSED and `architect_review_flag` is false (high-confidence auto-approval)
 
 The generated GLB is scaled to the element's most accurate dimensions (`dimensions_actual` if measured, otherwise `dimensions_estimated`). The app falls back to a colored box if no mesh exists or loading fails.
+
+**Demo meshes**: The 10 demo elements include 5 GLB models from the [Khronos glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets) repository (CC0/CC-BY), chosen to match each element's material category:
+- EL-0001 (CAT-A ceramic): PotOfCoals
+- EL-0002 (CAT-B metal): DamagedHelmet
+- EL-0003 (CAT-A stone): IridescentDishWithOlives
+- EL-0004 (CAT-E wood): SheenChair
+- EL-0007 (CAT-C glass): GlassBrokenWindow
 
 ### Colour System
 
