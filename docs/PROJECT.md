@@ -20,10 +20,15 @@ The Spolia Wall is a 3D-visualised architectural installation: three 20m x 1m ba
 │  data/meshes/            agent/assign_slot.py            │
 │                          agent/generate_mesh.py          │
 │                                                          │
+│  data/models/                                             │
+│  ├── building.glb        IFC/GLB building model           │
+│  └── building_config.json  Balcony alignment config       │
+│                                                          │
 │  app/ (Vite + Three.js)                                  │
 │  ├── src/main.js      Entry point, render loop           │
 │  ├── src/scene.js     Camera, controls, lighting         │
 │  ├── src/wall.js      Slot rendering, GLB loading        │
+│  ├── src/building.js  IFC/GLB building model loader      │
 │  ├── src/data.js      Polling, diffing, auto-update      │
 │  ├── src/panel.js     Click-to-detail overlay            │
 │  ├── src/hud.js       Stats HUD                          │
@@ -36,7 +41,7 @@ The Spolia Wall is a 3D-visualised architectural installation: three 20m x 1m ba
 
 ### Tech Stack
 
-- **Frontend**: Vite + Three.js (only two npm dependencies)
+- **Frontend**: Vite + Three.js + web-ifc (three npm dependencies)
 - **Backend**: None — JSON files in the repo are the database
 - **Agent scripts**: Python 3, stdlib only (no pip dependencies)
 - **3D meshes**: fal.ai TripoSR API → GLB format
@@ -126,15 +131,9 @@ Elements with `"demo": true` are fictional test data. They render at 60% opacity
 
 Five demo elements have GLB meshes from the [Khronos glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets) (CC0/CC-BY), chosen to match material categories:
 
-| Element | Category | GLB Source | Rationale |
-|---------|----------|------------|-----------|
-| EL-0001 | CAT-A (ceramic) | PotOfCoals | Ceramic vessel |
-| EL-0002 | CAT-B (metal) | DamagedHelmet | Distressed metalwork |
-| EL-0003 | CAT-A (stone) | IridescentDishWithOlives | Ceramic dish |
-| EL-0004 | CAT-E (wood) | SheenChair | Domestic furniture |
-| EL-0007 | CAT-C (glass) | GlassBrokenWindow | Broken glass panel |
+30 demo elements currently in the database, 25 with GLB meshes sourced from [Poly Haven](https://polyhaven.com/) (CC0 photogrammetry scans). These are architecturally appropriate objects: stone blocks, ceramic pots, metal gate latches, iron pipes, tools, e-waste, etc.
 
-The other 5 demo elements render as colored boxes (no mesh). In production, `generate_mesh.py` creates real GLBs from seller photos via fal.ai TripoSR.
+In production, `generate_mesh.py` creates real GLBs from seller photos via fal.ai TripoSR.
 
 ---
 
@@ -290,6 +289,53 @@ Checked automatically when assigning elements to slots:
    - Zone 3 (6m+): only CAT-A, CAT-B; CAT-C needs material data sheet
 
 Toggle composition overlay on the 3D wall with `C` key. Violations show as red wireframes.
+
+---
+
+## Building Model & Alignment
+
+The 3D wall represents three balcony railings on the north facade of a real building. An IFC or GLB model of the building can be loaded behind the wall to show the architectural context.
+
+### Upload Location
+
+Place the file at `data/models/building.glb` or `data/models/building.ifc`. The app auto-detects and loads it. Users can also drag-and-drop .ifc/.glb files onto the page for quick preview.
+
+### Alignment Config (`data/models/building_config.json`)
+
+This config is the **single source of truth** for mapping the IFC building geometry to the Three.js wall:
+
+```json
+{
+  "balcony_levels": [
+    { "name": "level-1", "label": "Ground floor balcony", "ifc_railing_y_mm": 0, "railing_height_mm": 1000 },
+    { "name": "level-2", "label": "First floor balcony", "ifc_railing_y_mm": 3500, "railing_height_mm": 1000 },
+    { "name": "level-3", "label": "Second floor balcony", "ifc_railing_y_mm": 7000, "railing_height_mm": 1000 }
+  ],
+  "railing_length_mm": 20000,
+  "north_facade": { "ifc_z_mm": 0 },
+  "building_transform": { "offset_x_mm": 0, "offset_y_mm": 0, "offset_z_mm": 500, "rotation_y_deg": 0 }
+}
+```
+
+**Fields:**
+- `balcony_levels[].ifc_railing_y_mm` — Y-height of each balcony railing base in IFC coordinates (mm). This determines where each wall level sits.
+- `balcony_levels[].railing_height_mm` — Height of the railing (wall height per level). Default 1000mm.
+- `north_facade.ifc_z_mm` — Z position of the north facade in IFC coordinates.
+- `building_transform` — Additional offset/rotation applied to the building model for fine-tuning.
+
+### Workflow: Uploading a New IFC
+
+1. Place the IFC/GLB at `data/models/building.glb`
+2. Open the IFC in your viewer, note the Y-heights of the three north-side balcony railings and the Z position of the north facade
+3. Edit `data/models/building_config.json` with those values
+4. Regenerate the wall grid: `node app/generate_slots.mjs > data/slots.json`
+5. Commit and push — the 3D wall and building will align automatically
+
+The system is **adaptive**: for any future IFC, just update the config values and regenerate slots. Both the Three.js renderer (`building.js`) and the slot generator (`generate_slots.mjs`) read from the same config.
+
+### IFC Support
+
+IFC files are parsed via [web-ifc](https://github.com/IFCjs/web-ifc) (dynamically imported, code-split). WASM is loaded from local files or falls back to a CDN. For faster loading and smaller file sizes, convert IFC to GLB using external tools like [IfcConvert](https://blenderbim.org/docs-python/ifcconvert/installation.html) or Blender.
 
 ---
 
