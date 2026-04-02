@@ -105,6 +105,7 @@ function createSlotMesh(slot, element) {
     });
     edges = new THREE.LineSegments(edgeGeo, edgeMat);
     edges.position.copy(mesh.position);
+    edges.userData = { slotId: slot.id };
     group.add(edges);
   }
 
@@ -118,6 +119,7 @@ function createSlotMesh(slot, element) {
   });
   const violationOverlay = new THREE.LineSegments(violationGeo, violationMat);
   violationOverlay.position.copy(mesh.position);
+  violationOverlay.userData = { slotId: slot.id };
   violationOverlay.visible = false;
   group.add(violationOverlay);
 

@@ -10,9 +10,19 @@ let currentSlotId = null;
 export function initPanel(camera, canvasEl) {
   panelEl = document.getElementById('detail-panel');
 
+  // Track pointer movement to distinguish click from drag/pan
+  let pointerDownPos = null;
+  canvasEl.addEventListener('pointerdown', (e) => {
+    pointerDownPos = { x: e.clientX, y: e.clientY };
+  });
+
   canvasEl.addEventListener('click', (event) => {
-    // Ignore if panel click
-    if (event.target.closest('#detail-panel')) return;
+    // Ignore if this was a drag/pan (mouse moved more than 5px)
+    if (pointerDownPos) {
+      const dx = event.clientX - pointerDownPos.x;
+      const dy = event.clientY - pointerDownPos.y;
+      if (dx * dx + dy * dy > 25) return;
+    }
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -26,9 +36,14 @@ export function initPanel(camera, canvasEl) {
     }
 
     const intersects = raycaster.intersectObjects(groups, true);
-    if (intersects.length > 0) {
-      const slotId = intersects[0].object.userData.slotId;
-      if (slotId) openPanel(slotId);
+
+    // Find the first intersection that has a slotId (skip edges/overlays)
+    for (const hit of intersects) {
+      const slotId = hit.object.userData?.slotId;
+      if (slotId) {
+        openPanel(slotId);
+        return;
+      }
     }
   });
 }
@@ -98,6 +113,15 @@ function renderElementDetail(slot, el) {
 
   // Status badge
   html += `<span class="status-badge" style="background:${statusColor};color:#000">${el.status}</span>`;
+
+  // Approval hint for PENDING_REVIEW
+  if (el.status === 'PENDING_REVIEW') {
+    html += `<div class="review-hint">`;
+    html += `<div style="font-size:11px;font-weight:bold;color:#b8860b;margin-bottom:4px">AWAITING ARCHITECT REVIEW</div>`;
+    html += `<div style="font-size:11px;color:#666;line-height:1.5">To approve:<br><code style="font-size:10px;background:#f0f0f0;padding:2px 4px;border-radius:2px">python agent/update_status.py ${el.id} APPROVED</code></div>`;
+    html += `<div style="font-size:11px;color:#666;line-height:1.5;margin-top:4px">To reject:<br><code style="font-size:10px;background:#f0f0f0;padding:2px 4px;border-radius:2px">python agent/update_status.py ${el.id} REJECTED</code></div>`;
+    html += `</div>`;
+  }
 
   // Category + ID
   html += `<h2>${el.id}</h2>`;

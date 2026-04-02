@@ -77,13 +77,16 @@ async function init() {
     }
     const intersects = raycaster.intersectObjects(groups, true);
 
-    if (intersects.length > 0) {
-      const slotId = intersects[0].object.userData.slotId;
-      if (slotId) {
-        const entry = slotMeshes.get(slotId);
-        if (entry) flyToObject(camera, controls, entry.group);
-      }
-    } else {
+    // Find first hit with a slotId (skip edges/overlays)
+    let hitSlotId = null;
+    for (const hit of intersects) {
+      if (hit.object.userData?.slotId) { hitSlotId = hit.object.userData.slotId; break; }
+    }
+
+    if (hitSlotId) {
+      const entry = slotMeshes.get(hitSlotId);
+      if (entry) flyToObject(camera, controls, entry.group);
+    } else if (intersects.length === 0) {
       fitCameraToWall(camera, controls, slotMeshes);
     }
   });

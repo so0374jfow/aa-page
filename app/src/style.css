@@ -326,6 +326,14 @@ html, body {
   font-size: 12px;
 }
 
+#detail-panel .review-hint {
+  background: #fffbe6;
+  border: 1px solid #f0e68c;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
 #detail-panel .architect-notes-input {
   width: 100%;
   min-height: 60px;
