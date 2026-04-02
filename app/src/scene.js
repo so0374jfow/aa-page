@@ -5,7 +5,7 @@ export function createScene(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x0a0a0a);
+  renderer.setClearColor(0xf5f5f5);
 
   const scene = new THREE.Scene();
 

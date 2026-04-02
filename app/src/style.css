@@ -8,9 +8,9 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #0a0a0a !important;
+  background: #ffffff !important;
   font-family: 'Courier New', Courier, monospace;
-  color: #e0e0e0;
+  color: #333;
 }
 
 #wall-canvas {
@@ -38,7 +38,7 @@ html, body {
 #hud .hud-title {
   font-size: 14px;
   font-weight: bold;
-  color: #ffffff;
+  color: #111;
   margin-bottom: 4px;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -61,7 +61,7 @@ html, body {
 #hud .hud-stat {
   font-size: 18px;
   font-weight: bold;
-  color: #ffffff;
+  color: #111;
 }
 
 #hud .hud-label {
@@ -75,7 +75,7 @@ html, body {
 #hud .bar-container {
   width: 100%;
   height: 6px;
-  background: #1a1a1a;
+  background: #e0e0e0;
   border-radius: 3px;
   position: relative;
   margin: 3px 0;
@@ -91,18 +91,18 @@ html, body {
   position: absolute;
   top: -1px;
   height: 8px;
-  border-left: 1px solid rgba(255,255,255,0.3);
-  border-right: 1px solid rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.05);
+  border-left: 1px solid rgba(0,0,0,0.2);
+  border-right: 1px solid rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.05);
 }
 
 #hud .violations {
-  color: #ff4444;
+  color: #cc2222;
   font-weight: bold;
 }
 
 #hud .timestamp {
-  color: #555;
+  color: #999;
   font-size: 10px;
 }
 
@@ -113,14 +113,15 @@ html, body {
   right: 0;
   width: 420px;
   height: 100%;
-  background: #111111;
-  border-left: 1px solid #2a2a2a;
+  background: #fafafa;
+  border-left: 1px solid #ddd;
   z-index: 200;
   overflow-y: auto;
   transform: translateX(100%);
   transition: transform 0.3s ease;
   padding: 24px;
   font-size: 13px;
+  color: #333;
 }
 
 #detail-panel.open {
@@ -132,7 +133,7 @@ html, body {
   top: 16px;
   right: 16px;
   background: none;
-  border: 1px solid #333;
+  border: 1px solid #ccc;
   color: #888;
   font-size: 18px;
   cursor: pointer;
@@ -145,8 +146,8 @@ html, body {
 }
 
 #detail-panel .panel-close:hover {
-  color: #fff;
-  border-color: #555;
+  color: #333;
+  border-color: #999;
 }
 
 #detail-panel .status-badge {
@@ -163,17 +164,17 @@ html, body {
 #detail-panel h2 {
   font-size: 16px;
   margin-bottom: 4px;
-  color: #fff;
+  color: #111;
 }
 
 #detail-panel .subcategory {
-  color: #888;
+  color: #777;
   font-size: 12px;
   margin-bottom: 16px;
 }
 
 #detail-panel .description {
-  color: #ccc;
+  color: #444;
   margin-bottom: 16px;
   line-height: 1.5;
 }
@@ -182,10 +183,10 @@ html, body {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #666;
+  color: #999;
   margin-top: 16px;
   margin-bottom: 6px;
-  border-top: 1px solid #222;
+  border-top: 1px solid #eee;
   padding-top: 12px;
 }
 
@@ -198,14 +199,14 @@ html, body {
 
 #detail-panel .dim-table th {
   text-align: left;
-  color: #666;
+  color: #999;
   font-weight: normal;
   padding: 2px 8px 2px 0;
 }
 
 #detail-panel .dim-table td {
   padding: 2px 8px 2px 0;
-  color: #ccc;
+  color: #444;
 }
 
 #detail-panel .image-grid {
@@ -220,13 +221,13 @@ html, body {
   height: 80px;
   object-fit: cover;
   border-radius: 4px;
-  border: 1px solid #333;
+  border: 1px solid #ddd;
   cursor: pointer;
   transition: border-color 0.2s;
 }
 
 #detail-panel .image-grid img:hover {
-  border-color: #666;
+  border-color: #999;
 }
 
 #detail-panel .price-row {
@@ -238,14 +239,14 @@ html, body {
 
 #detail-panel .price-row.total {
   font-weight: bold;
-  color: #fff;
-  border-top: 1px solid #333;
+  color: #111;
+  border-top: 1px solid #ddd;
   margin-top: 4px;
   padding-top: 4px;
 }
 
 #detail-panel .listing-link {
-  color: #6699cc;
+  color: #2266aa;
   text-decoration: none;
   font-size: 12px;
   word-break: break-all;
@@ -256,23 +257,23 @@ html, body {
 }
 
 #detail-panel .provenance {
-  border-left: 2px solid #333;
+  border-left: 2px solid #ddd;
   padding-left: 12px;
-  color: #aaa;
+  color: #666;
   font-style: italic;
   line-height: 1.5;
   margin-bottom: 8px;
 }
 
 #detail-panel .negotiation-log {
-  background: #0a0a0a;
-  border: 1px solid #222;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
   border-radius: 4px;
   padding: 12px;
   font-family: 'Courier New', monospace;
   font-size: 11px;
   line-height: 1.5;
-  color: #aaa;
+  color: #555;
   max-height: 200px;
   overflow-y: auto;
   white-space: pre-wrap;
@@ -289,19 +290,19 @@ html, body {
 }
 
 #detail-panel .fire-badge.zone {
-  background: #1a2a1a;
-  color: #66aa66;
-  border: 1px solid #2a3a2a;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
 }
 
 #detail-panel .fire-badge.classification {
-  background: #2a1a1a;
-  color: #aa6666;
-  border: 1px solid #3a2a2a;
+  background: #fbe9e7;
+  color: #c62828;
+  border: 1px solid #ffccbc;
 }
 
 #detail-panel .agent-notes {
-  color: #aaa;
+  color: #555;
   line-height: 1.5;
   font-size: 12px;
 }
@@ -309,10 +310,10 @@ html, body {
 #detail-panel .architect-notes-input {
   width: 100%;
   min-height: 60px;
-  background: #0a0a0a;
-  border: 1px solid #333;
+  background: #fff;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  color: #ccc;
+  color: #333;
   font-family: 'Courier New', monospace;
   font-size: 12px;
   padding: 8px;
@@ -321,17 +322,17 @@ html, body {
 
 #detail-panel .architect-notes-input:focus {
   outline: none;
-  border-color: #555;
+  border-color: #888;
 }
 
 #detail-panel .empty-slot-info {
-  color: #666;
+  color: #888;
   text-align: center;
   padding: 40px 20px;
 }
 
 #detail-panel .empty-slot-info h3 {
-  color: #888;
+  color: #555;
   margin-bottom: 12px;
 }
 
@@ -339,7 +340,7 @@ html, body {
 #lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0,0,0,0.85);
   z-index: 300;
   display: none;
   align-items: center;
@@ -363,7 +364,7 @@ html, body {
   bottom: 16px;
   right: 16px;
   font-size: 10px;
-  color: #444;
+  color: #aaa;
   text-align: right;
   line-height: 1.8;
   z-index: 50;
@@ -371,11 +372,11 @@ html, body {
 
 #keyboard-hints kbd {
   display: inline-block;
-  background: #1a1a1a;
-  border: 1px solid #333;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
   border-radius: 3px;
   padding: 1px 5px;
   font-family: 'Courier New', monospace;
   font-size: 10px;
-  color: #666;
+  color: #777;
 }

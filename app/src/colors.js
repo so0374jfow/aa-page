@@ -22,9 +22,9 @@ export const CATEGORY_COLORS = {
   'CAT-E': 0xc4a96a  // warm sand
 };
 
-export const EMPTY_COLOR = 0x1a1a1a;
+export const EMPTY_COLOR = 0xcccccc;
 export const VIOLATION_COLOR = 0xff0000;
-export const EDGE_COLOR = 0xffffff;
+export const EDGE_COLOR = 0x333333;
 
 export function getElementColor(element) {
   if (!element) return EMPTY_COLOR;
