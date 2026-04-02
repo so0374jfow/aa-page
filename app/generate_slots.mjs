@@ -20,9 +20,9 @@ function randomDims() {
   // No type system — just random objects like real spolia
   const w = rand(25, 350);
   const h = rand(25, 300);
-  // Depth: deliberately uncorrelated with size
-  // Small shards can protrude far (pipes), large slabs can be thin
-  const d = rand(20, 300);
+  // Depth: ~15% of objects protrude significantly (up to 500mm)
+  // like pipes, tech molds, or deep sculptural pieces
+  const d = Math.random() < 0.15 ? rand(200, 500) : rand(20, 300);
   return { width: w, height: h, depth: d };
 }
 
@@ -173,7 +173,7 @@ function packRailing(story, storyIndex) {
         dimensions: {
           width: gw * RES,
           height: gh * RES,
-          depth: rand(20, 280)
+          depth: Math.random() < 0.15 ? rand(200, 500) : rand(20, 280)
         },
         height_m: parseFloat((absoluteY / 1000).toFixed(3)),
         fire_zone: fireZone(absoluteY / 1000),
