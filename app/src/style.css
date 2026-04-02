@@ -150,6 +150,25 @@ html, body {
   border-color: #999;
 }
 
+#detail-panel .demo-banner {
+  background: repeating-linear-gradient(
+    -45deg,
+    #ff9800,
+    #ff9800 10px,
+    #fb8c00 10px,
+    #fb8c00 20px
+  );
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  padding: 6px 12px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
 #detail-panel .status-badge {
   display: inline-block;
   padding: 3px 10px;

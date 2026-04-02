@@ -90,6 +90,11 @@ function renderElementDetail(slot, el) {
 
   let html = '';
 
+  // Demo banner
+  if (el.demo) {
+    html += `<div class="demo-banner">DEMO — FICTIONAL ELEMENT</div>`;
+  }
+
   // Status badge
   html += `<span class="status-badge" style="background:${statusColor};color:#000">${el.status}</span>`;
 

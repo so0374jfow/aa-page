@@ -1471,8 +1471,8 @@
       },
       "height_m": 0.49,
       "fire_zone": 1,
-      "status": "empty",
-      "element_id": null,
+      "status": "assigned",
+      "element_id": "EL-0004",
       "adjacent": [
         "SLOT-L1-218",
         "SLOT-L1-1441",
@@ -70248,8 +70248,8 @@
       },
       "height_m": 3.86,
       "fire_zone": 2,
-      "status": "empty",
-      "element_id": null,
+      "status": "assigned",
+      "element_id": "EL-0005",
       "adjacent": [
         "SLOT-L2-012",
         "SLOT-L2-1157",

@@ -81,7 +81,9 @@ export function updateHUD(elementsData) {
 
   // Key stats
   html += `<div class="hud-section">`;
-  html += `<div class="hud-stat">${metadata.total_elements || elements.length}</div>`;
+  const demoCount = elements.filter(el => el.demo).length;
+  const totalCount = metadata.total_elements || elements.length;
+  html += `<div class="hud-stat">${totalCount}${demoCount > 0 ? ` <span style="font-size:12px;color:#ff9800">(${demoCount} demo)</span>` : ''}</div>`;
   html += `<div class="hud-label">Elements</div>`;
   html += `<div class="hud-stat" style="margin-top:4px">CHF ${(metadata.total_spend_chf || 0).toFixed(2)}</div>`;
   html += `<div class="hud-label">Total Spend</div>`;

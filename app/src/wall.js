@@ -49,10 +49,13 @@ function createSlotMesh(slot, element) {
       opacity: 0.3
     });
   } else {
+    const isDemo = element?.demo === true;
     material = new THREE.MeshStandardMaterial({
       color,
       roughness: 0.7,
-      metalness: 0.1
+      metalness: 0.1,
+      transparent: isDemo,
+      opacity: isDemo ? 0.6 : 1.0
     });
   }
 
