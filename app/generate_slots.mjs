@@ -1,5 +1,5 @@
-// Generate slots.json with 3 balcony railings, each 20m x 1m, stacked at 3 story heights
-// Tightly packed — no gaps. Irregular depth for sculptural surface.
+// Generate slots.json — irregular spolia mosaic packing
+// Each slot has its own random height. Skyline algorithm fills from bottom up.
 // Run: node generate_slots.mjs > ../data/slots.json
 
 function rand(min, max) {
@@ -7,31 +7,28 @@ function rand(min, max) {
 }
 
 function pickType() {
-  // Target: Large ≤25%, Medium 50-65%, Small ≥25%
   const r = Math.random();
-  if (r < 0.20) return 'A';
-  if (r < 0.75) return 'B';
-  return 'C';
+  if (r < 0.05) return 'A';       // ~5% large — rare anchor pieces
+  if (r < 0.35) return 'B';       // ~30% medium
+  return 'C';                      // ~65% small — the fabric of spolia
 }
 
 function slotDims(type) {
-  // Depth is deliberately irregular — small objects can stick out far,
-  // large objects can be shallow. Creates sculptural relief.
   switch (type) {
     case 'A': return {
-      width: rand(300, 600),
-      height: rand(200, 500),
+      width: rand(180, 350),
+      height: rand(100, 250),
       depth: rand(60, 180)
     };
     case 'B': return {
-      width: rand(150, 300),
-      height: rand(100, 300),
-      depth: rand(40, 220)   // medium objects: wide depth range
+      width: rand(70, 180),
+      height: rand(50, 150),
+      depth: rand(40, 220)
     };
     case 'C': return {
-      width: rand(50, 150),
-      height: rand(50, 200),
-      depth: rand(30, 280)   // small objects can protrude a lot (pipes, molds)
+      width: rand(25, 100),
+      height: rand(25, 90),
+      depth: rand(30, 280)        // small objects can protrude far (pipes, molds)
     };
   }
 }
@@ -42,107 +39,154 @@ function fireZone(absoluteHeightM) {
   return 3;
 }
 
-// Story heights in mm (floor level where railing starts)
 const STORIES = [
   { name: 'level-1', label: 'Ground floor',  baseY: 0 },
   { name: 'level-2', label: 'First floor',   baseY: 3500 },
   { name: 'level-3', label: 'Second floor',  baseY: 7000 },
 ];
 
+/**
+ * Skyline-based irregular packing.
+ *
+ * Maintains a heightmap (skyline) across the railing width.
+ * At each step, finds the lowest point, places a random slot there.
+ * Slots have independent heights — no uniform rows.
+ * Result: organic, spolia-like mosaic.
+ */
 function packRailing(story, storyIndex) {
-  const RAILING_W = 20000; // 20m in mm
-  const RAILING_H = 1000;  // 1m in mm
-  const slots = [];
-  let slotNum = 1;
+  const W = 20000; // 20m in mm
+  const H = 1000;  // 1m in mm
+  const RESOLUTION = 5; // mm per skyline bucket (performance vs precision)
+  const buckets = Math.ceil(W / RESOLUTION);
   const prefix = `SLOT-L${storyIndex + 1}`;
 
-  // Pack rows bottom-to-top, no gaps
-  let y = 0;
-  while (y < RAILING_H) {
-    // Pick a row height — use a random slot to set it
-    const seedType = pickType();
-    const seedDims = slotDims(seedType);
-    let rowHeight = seedDims.height;
+  // Skyline: height at each x bucket (relative to railing bottom)
+  const skyline = new Float32Array(buckets); // all zeros
 
-    // Clamp to remaining space
-    if (y + rowHeight > RAILING_H) {
-      rowHeight = RAILING_H - y;
-      if (rowHeight < 30) break;
-    }
+  const slots = [];
+  let slotNum = 1;
+  let attempts = 0;
+  const MAX_ATTEMPTS = 50000;
 
-    // Pack left-to-right, no horizontal gaps
-    let x = 0;
-    while (x < RAILING_W) {
-      const type = pickType();
-      let dims = slotDims(type);
+  while (attempts < MAX_ATTEMPTS) {
+    attempts++;
 
-      // Force height to exactly fill the row (no vertical gaps)
-      dims.height = rowHeight;
-
-      // Fill remaining width if last slot in row
-      const remaining = RAILING_W - x;
-      if (remaining <= dims.width * 1.3) {
-        // Stretch to fill instead of leaving a sliver
-        dims.width = remaining;
-      } else if (dims.width > remaining) {
-        dims.width = remaining;
+    // Find the lowest point in the skyline
+    let minH = Infinity;
+    let minBucket = 0;
+    for (let i = 0; i < buckets; i++) {
+      if (skyline[i] < minH) {
+        minH = skyline[i];
+        minBucket = i;
       }
-
-      if (dims.width < 20) break;
-
-      const absoluteY = story.baseY + y;
-      const absoluteHeightM = absoluteY / 1000;
-      const id = `${prefix}-${String(slotNum).padStart(3, '0')}`;
-
-      slots.push({
-        id,
-        face: story.name,
-        type,
-        position: {
-          x: x,
-          y: absoluteY,
-          z: 0
-        },
-        dimensions: dims,
-        height_m: parseFloat(absoluteHeightM.toFixed(3)),
-        fire_zone: fireZone(absoluteHeightM),
-        status: 'empty',
-        element_id: null,
-        adjacent: []
-      });
-
-      slotNum++;
-      x += dims.width; // No gap — flush packing
     }
 
-    y += rowHeight; // No gap — flush packing
+    // If lowest point is at or above the railing height, we're done
+    if (minH >= H) break;
+
+    // Find the width of the "valley" at this height
+    // (contiguous run of buckets at or near the minimum height)
+    let leftBucket = minBucket;
+    let rightBucket = minBucket;
+    while (leftBucket > 0 && skyline[leftBucket - 1] <= minH + 5) leftBucket--;
+    while (rightBucket < buckets - 1 && skyline[rightBucket + 1] <= minH + 5) rightBucket++;
+
+    const valleyWidthMM = (rightBucket - leftBucket + 1) * RESOLUTION;
+    const xStart = leftBucket * RESOLUTION;
+
+    // Pick a slot type and generate dimensions
+    const type = pickType();
+    let dims = slotDims(type);
+
+    // Constrain width to valley width (but at least some minimum)
+    if (dims.width > valleyWidthMM) {
+      dims.width = valleyWidthMM;
+    }
+    if (dims.width < 30) {
+      // Valley too narrow — try to fill with a tiny infill
+      dims.width = Math.min(valleyWidthMM, rand(30, 80));
+      dims.height = Math.min(dims.height, rand(30, 100));
+    }
+
+    // Constrain height to not exceed railing top
+    const remainingH = H - minH;
+    if (dims.height > remainingH) {
+      dims.height = remainingH;
+    }
+    if (dims.height < 20) continue; // skip if too small
+    if (dims.width < 20) continue;
+
+    // Place the slot
+    const absoluteY = story.baseY + minH;
+    const absoluteHeightM = absoluteY / 1000;
+    const id = `${prefix}-${String(slotNum).padStart(3, '0')}`;
+
+    slots.push({
+      id,
+      face: story.name,
+      type,
+      position: {
+        x: xStart,
+        y: absoluteY,
+        z: 0
+      },
+      dimensions: {
+        width: Math.round(dims.width),
+        height: Math.round(dims.height),
+        depth: dims.depth
+      },
+      height_m: parseFloat(absoluteHeightM.toFixed(3)),
+      fire_zone: fireZone(absoluteHeightM),
+      status: 'empty',
+      element_id: null,
+      adjacent: []
+    });
+
+    slotNum++;
+
+    // Update skyline: raise the height where this slot was placed
+    const slotLeftBucket = Math.floor(xStart / RESOLUTION);
+    const slotRightBucket = Math.min(
+      buckets - 1,
+      Math.floor((xStart + dims.width) / RESOLUTION) - 1
+    );
+    const newH = minH + dims.height;
+    for (let i = slotLeftBucket; i <= slotRightBucket; i++) {
+      skyline[i] = newH;
+    }
   }
 
   return slots;
 }
 
-// Compute adjacency within each railing
+// Compute adjacency: slots sharing an edge
 function computeAdjacency(slots) {
-  const TOLERANCE = 10; // mm — tighter tolerance for flush packing
+  const TOLERANCE = 15;
 
+  // Build spatial index for performance
   for (let i = 0; i < slots.length; i++) {
     const a = slots[i];
+    const ax1 = a.position.x, ax2 = ax1 + a.dimensions.width;
+    const ay1 = a.position.y, ay2 = ay1 + a.dimensions.height;
+
     for (let j = i + 1; j < slots.length; j++) {
       const b = slots[j];
-      if (a.face !== b.face) continue;
+      if (b.face !== a.face) continue;
 
-      const ax = a.position.x, aw = a.dimensions.width;
-      const bx = b.position.x, bw = b.dimensions.width;
-      const ay = a.position.y, ah = a.dimensions.height;
-      const by = b.position.y, bh = b.dimensions.height;
+      const bx1 = b.position.x, bx2 = bx1 + b.dimensions.width;
+      const by1 = b.position.y, by2 = by1 + b.dimensions.height;
 
-      // Horizontal adjacency (side by side, overlapping in Y)
-      const hAdj = (Math.abs((ax + aw) - bx) < TOLERANCE || Math.abs((bx + bw) - ax) < TOLERANCE);
-      const yOverlap = ay < (by + bh) && by < (ay + ah);
+      // Quick bounding box reject
+      if (ax2 + TOLERANCE < bx1 || bx2 + TOLERANCE < ax1) continue;
+      if (ay2 + TOLERANCE < by1 || by2 + TOLERANCE < ay1) continue;
 
-      // Vertical adjacency (stacked, overlapping in X)
-      const vAdj = (Math.abs((ay + ah) - by) < TOLERANCE || Math.abs((by + bh) - ay) < TOLERANCE);
-      const xOverlap = ax < (bx + bw) && bx < (ax + aw);
+      // Horizontal adjacency
+      const hAdj = Math.abs(ax2 - bx1) < TOLERANCE || Math.abs(bx2 - ax1) < TOLERANCE;
+      const yOverlap = ay1 < by2 && by1 < ay2;
+
+      // Vertical adjacency
+      const vAdj = Math.abs(ay2 - by1) < TOLERANCE || Math.abs(by2 - ay1) < TOLERANCE;
+      const xOverlap = ax1 < bx2 && bx1 < ax2;
 
       if ((hAdj && yOverlap) || (vAdj && xOverlap)) {
         a.adjacent.push(b.id);
@@ -152,7 +196,7 @@ function computeAdjacency(slots) {
   }
 }
 
-// Generate three railings at different story heights
+// Generate
 const allLevels = STORIES.map((story, i) => {
   const slots = packRailing(story, i);
   computeAdjacency(slots);
@@ -160,18 +204,15 @@ const allLevels = STORIES.map((story, i) => {
 });
 
 const allSlots = allLevels.flatMap(l => l.slots);
-const output = { slots: allSlots };
+console.log(JSON.stringify({ slots: allSlots }, null, 2));
 
-console.log(JSON.stringify(output, null, 2));
-
-// Stats
 for (const { story, slots } of allLevels) {
   const depths = slots.map(s => s.dimensions.depth);
-  const avgDepth = Math.round(depths.reduce((a,b) => a+b, 0) / depths.length);
-  const maxDepth = Math.max(...depths);
-  const minDepth = Math.min(...depths);
+  const heights = slots.map(s => s.dimensions.height);
   process.stderr.write(
-    `${story.name}: ${slots.length} slots, depth ${minDepth}–${maxDepth}mm (avg ${avgDepth}mm)\n`
+    `${story.name}: ${slots.length} slots, ` +
+    `height ${Math.min(...heights)}–${Math.max(...heights)}mm, ` +
+    `depth ${Math.min(...depths)}–${Math.max(...depths)}mm\n`
   );
 }
 process.stderr.write(`Total: ${allSlots.length} slots\n`);
