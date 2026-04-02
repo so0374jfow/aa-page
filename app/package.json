@@ -1,15 +1,17 @@
 {
   "name": "spolia-wall",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "copy-wasm": "mkdir -p public/wasm && cp node_modules/web-ifc/*.wasm public/wasm/ 2>/dev/null; exit 0",
+    "dev": "npm run copy-wasm && vite",
+    "build": "npm run copy-wasm && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "^0.170.0"
+    "three": "^0.170.0",
+    "web-ifc": "^0.0.57"
   },
   "devDependencies": {
     "vite": "^6.0.0"

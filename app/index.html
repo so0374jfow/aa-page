@@ -10,6 +10,41 @@
   <canvas id="wall-canvas"></canvas>
   <div id="hud"></div>
   <div id="detail-panel"></div>
+
+  <!-- Project description overlay -->
+  <div id="info-overlay">
+    <button id="info-close">&times;</button>
+    <h1>Spolia Wall</h1>
+    <p>A 20m &times; 1m architectural installation composed of hundreds of salvaged objects from European marketplaces, stacked across three balcony railings.</p>
+    <p>An AI procurement agent (<strong>Antoine</strong>) continuously scouts, negotiates, and purchases physical materials &mdash; each appearing on this 3D wall in real time.</p>
+    <p>Click any element to see its full provenance story. Objects with 3D meshes show their original textures; others appear as coloured blocks indicating their pipeline status.</p>
+    <div class="info-legend">
+      <div class="info-legend-row"><span class="dot" style="background:#666"></span> Scouted</div>
+      <div class="info-legend-row"><span class="dot" style="background:#888"></span> Assessed</div>
+      <div class="info-legend-row"><span class="dot" style="background:#dc3"></span> Pending Review</div>
+      <div class="info-legend-row"><span class="dot" style="background:#8c4"></span> Approved</div>
+      <div class="info-legend-row"><span class="dot" style="background:#d83"></span> Negotiating</div>
+      <div class="info-legend-row"><span class="dot" style="background:#4a4"></span> Purchased</div>
+      <div class="info-legend-row"><span class="dot" style="background:#4a8"></span> Shipped</div>
+      <div class="info-legend-row"><span class="dot" style="background:#48b"></span> Received</div>
+      <div class="info-legend-row"><span class="dot" style="background:#85b"></span> Allocated</div>
+    </div>
+    <p class="info-hint">Press <kbd>I</kbd> to toggle this panel &middot; <kbd>F</kbd> fit view &middot; Double-click to inspect</p>
+  </div>
+
+  <!-- Toolbar -->
+  <div id="toolbar">
+    <button id="btn-info" title="Project info (I)">i</button>
+    <button id="btn-color" title="Toggle color overlay (T)">T</button>
+    <button id="btn-building" title="Toggle building (B)">B</button>
+    <button id="btn-fit" title="Fit camera (F)">F</button>
+  </div>
+
+  <!-- IFC drop zone overlay (appears on drag) -->
+  <div id="ifc-dropzone">
+    <div class="dropzone-content">Drop .ifc or .glb file here<br><span>Building model will render behind the wall</span></div>
+  </div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

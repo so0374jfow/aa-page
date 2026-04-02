@@ -35,6 +35,10 @@ jobs:
           mkdir -p app/public/data
           cp -r data/* app/public/data/
 
+      - name: Copy web-ifc WASM to public
+        working-directory: app
+        run: mkdir -p public/wasm && cp node_modules/web-ifc/*.wasm public/wasm/ 2>/dev/null || true
+
       - name: Build
         working-directory: app
         run: npm run build
