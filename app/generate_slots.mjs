@@ -1,4 +1,5 @@
 // Generate slots.json with 3 balcony railings, each 20m x 1m, stacked at 3 story heights
+// Tightly packed — no gaps. Irregular depth for sculptural surface.
 // Run: node generate_slots.mjs > ../data/slots.json
 
 function rand(min, max) {
@@ -8,16 +9,30 @@ function rand(min, max) {
 function pickType() {
   // Target: Large ≤25%, Medium 50-65%, Small ≥25%
   const r = Math.random();
-  if (r < 0.20) return 'A';      // ~20% large
-  if (r < 0.75) return 'B';      // ~55% medium
-  return 'C';                     // ~25% small
+  if (r < 0.20) return 'A';
+  if (r < 0.75) return 'B';
+  return 'C';
 }
 
 function slotDims(type) {
+  // Depth is deliberately irregular — small objects can stick out far,
+  // large objects can be shallow. Creates sculptural relief.
   switch (type) {
-    case 'A': return { width: rand(300, 600), height: rand(200, 500), depth: rand(80, 200) };
-    case 'B': return { width: rand(150, 300), height: rand(100, 300), depth: rand(40, 120) };
-    case 'C': return { width: rand(50, 150),  height: rand(50, 200),  depth: rand(20, 80)  };
+    case 'A': return {
+      width: rand(300, 600),
+      height: rand(200, 500),
+      depth: rand(60, 180)
+    };
+    case 'B': return {
+      width: rand(150, 300),
+      height: rand(100, 300),
+      depth: rand(40, 220)   // medium objects: wide depth range
+    };
+    case 'C': return {
+      width: rand(50, 150),
+      height: rand(50, 200),
+      depth: rand(30, 280)   // small objects can protrude a lot (pipes, molds)
+    };
   }
 }
 
@@ -27,13 +42,11 @@ function fireZone(absoluteHeightM) {
   return 3;
 }
 
-const GAP = 5; // 5mm gap between slots
-
 // Story heights in mm (floor level where railing starts)
 const STORIES = [
   { name: 'level-1', label: 'Ground floor',  baseY: 0 },
-  { name: 'level-2', label: 'First floor',   baseY: 3500 },  // 3.5m up
-  { name: 'level-3', label: 'Second floor',  baseY: 7000 },  // 7m up
+  { name: 'level-2', label: 'First floor',   baseY: 3500 },
+  { name: 'level-3', label: 'Second floor',  baseY: 7000 },
 ];
 
 function packRailing(story, storyIndex) {
@@ -43,33 +56,41 @@ function packRailing(story, storyIndex) {
   let slotNum = 1;
   const prefix = `SLOT-L${storyIndex + 1}`;
 
-  // Pack rows bottom to top within the railing
-  let localY = 0;
-  while (localY < RAILING_H) {
-    const rowType = pickType();
-    const rowDims = slotDims(rowType);
-    let rowHeight = rowDims.height;
+  // Pack rows bottom-to-top, no gaps
+  let y = 0;
+  while (y < RAILING_H) {
+    // Pick a row height — use a random slot to set it
+    const seedType = pickType();
+    const seedDims = slotDims(seedType);
+    let rowHeight = seedDims.height;
 
-    if (localY + rowHeight > RAILING_H) {
-      rowHeight = RAILING_H - localY;
-      if (rowHeight < 40) break;
+    // Clamp to remaining space
+    if (y + rowHeight > RAILING_H) {
+      rowHeight = RAILING_H - y;
+      if (rowHeight < 30) break;
     }
 
-    // Pack slots left to right
+    // Pack left-to-right, no horizontal gaps
     let x = 0;
     while (x < RAILING_W) {
       const type = pickType();
       let dims = slotDims(type);
 
-      dims.height = Math.min(dims.height, rowHeight);
-      if (dims.height < 40) dims.height = rowHeight;
+      // Force height to exactly fill the row (no vertical gaps)
+      dims.height = rowHeight;
 
-      if (x + dims.width > RAILING_W) {
-        dims.width = RAILING_W - x;
-        if (dims.width < 30) break;
+      // Fill remaining width if last slot in row
+      const remaining = RAILING_W - x;
+      if (remaining <= dims.width * 1.3) {
+        // Stretch to fill instead of leaving a sliver
+        dims.width = remaining;
+      } else if (dims.width > remaining) {
+        dims.width = remaining;
       }
 
-      const absoluteY = story.baseY + localY;
+      if (dims.width < 20) break;
+
+      const absoluteY = story.baseY + y;
       const absoluteHeightM = absoluteY / 1000;
       const id = `${prefix}-${String(slotNum).padStart(3, '0')}`;
 
@@ -91,10 +112,10 @@ function packRailing(story, storyIndex) {
       });
 
       slotNum++;
-      x += dims.width + GAP;
+      x += dims.width; // No gap — flush packing
     }
 
-    localY += rowHeight + GAP;
+    y += rowHeight; // No gap — flush packing
   }
 
   return slots;
@@ -102,7 +123,7 @@ function packRailing(story, storyIndex) {
 
 // Compute adjacency within each railing
 function computeAdjacency(slots) {
-  const TOLERANCE = 20; // mm
+  const TOLERANCE = 10; // mm — tighter tolerance for flush packing
 
   for (let i = 0; i < slots.length; i++) {
     const a = slots[i];
@@ -143,7 +164,14 @@ const output = { slots: allSlots };
 
 console.log(JSON.stringify(output, null, 2));
 
+// Stats
 for (const { story, slots } of allLevels) {
-  process.stderr.write(`${story.name} (${story.label}, base ${story.baseY}mm): ${slots.length} slots\n`);
+  const depths = slots.map(s => s.dimensions.depth);
+  const avgDepth = Math.round(depths.reduce((a,b) => a+b, 0) / depths.length);
+  const maxDepth = Math.max(...depths);
+  const minDepth = Math.min(...depths);
+  process.stderr.write(
+    `${story.name}: ${slots.length} slots, depth ${minDepth}–${maxDepth}mm (avg ${avgDepth}mm)\n`
+  );
 }
 process.stderr.write(`Total: ${allSlots.length} slots\n`);
