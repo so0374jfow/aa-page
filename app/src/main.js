@@ -84,44 +84,71 @@ async function init() {
         if (entry) flyToObject(camera, controls, entry.group);
       }
     } else {
-      // Double-click empty space → reset view
       fitCameraToWall(camera, controls, slotMeshes);
     }
   });
 
-  // ── Toolbar buttons ──
+  // ── UI elements ──
   const btnInfo = document.getElementById('btn-info');
   const btnColor = document.getElementById('btn-color');
   const btnBuilding = document.getElementById('btn-building');
+  const btnComposition = document.getElementById('btn-composition');
+  const btnAxes = document.getElementById('btn-axes');
   const btnFit = document.getElementById('btn-fit');
+  const btnRefresh = document.getElementById('btn-refresh');
   const infoOverlay = document.getElementById('info-overlay');
   const infoClose = document.getElementById('info-close');
 
-  function toggleInfo() {
+  // ── Action functions ──
+  function doToggleInfo() {
     infoOverlay.classList.toggle('visible');
-    btnInfo.classList.toggle('active', infoOverlay.classList.contains('visible'));
+    btnInfo?.classList.toggle('active', infoOverlay.classList.contains('visible'));
   }
 
   function doToggleColor() {
     const on = toggleColorOverlay();
-    btnColor.classList.toggle('active', on);
+    btnColor?.classList.toggle('active', on);
   }
 
   function doToggleBuilding() {
     const on = toggleBuilding();
-    btnBuilding.classList.toggle('active', on);
+    btnBuilding?.classList.toggle('active', on);
   }
 
-  btnInfo?.addEventListener('click', toggleInfo);
+  function doToggleComposition() {
+    const v = toggleCompositionOverlay();
+    setViolationCount(v);
+    updateHUD(latestElementsData);
+    btnComposition?.classList.toggle('active', v > 0 || btnComposition?.classList.contains('active'));
+  }
+
+  function doToggleAxes() {
+    axesHelper.visible = !axesHelper.visible;
+    btnAxes?.classList.toggle('active', axesHelper.visible);
+  }
+
+  function doFit() {
+    fitCameraToWall(camera, controls, slotMeshes);
+  }
+
+  function doRefresh() {
+    forceRefresh();
+  }
+
+  // ── Toolbar click handlers ──
+  btnInfo?.addEventListener('click', doToggleInfo);
   btnColor?.addEventListener('click', doToggleColor);
   btnBuilding?.addEventListener('click', doToggleBuilding);
-  btnFit?.addEventListener('click', () => fitCameraToWall(camera, controls, slotMeshes));
-  infoClose?.addEventListener('click', toggleInfo);
+  btnComposition?.addEventListener('click', doToggleComposition);
+  btnAxes?.addEventListener('click', doToggleAxes);
+  btnFit?.addEventListener('click', doFit);
+  btnRefresh?.addEventListener('click', doRefresh);
+  infoClose?.addEventListener('click', doToggleInfo);
 
   // Show info overlay on first visit
   if (!localStorage.getItem('spolia_visited')) {
     infoOverlay.classList.add('visible');
-    btnInfo.classList.add('active');
+    btnInfo?.classList.add('active');
     localStorage.setItem('spolia_visited', '1');
   }
 
@@ -130,20 +157,17 @@ async function init() {
     if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
 
     switch (e.key.toLowerCase()) {
-      case 'c': {
-        const v = toggleCompositionOverlay();
-        setViolationCount(v);
-        updateHUD(latestElementsData);
+      case 'c':
+        doToggleComposition();
         break;
-      }
       case 'a':
-        axesHelper.visible = !axesHelper.visible;
+        doToggleAxes();
         break;
       case 'r':
-        forceRefresh();
+        doRefresh();
         break;
       case 'f':
-        fitCameraToWall(camera, controls, slotMeshes);
+        doFit();
         break;
       case 't':
         doToggleColor();
@@ -152,11 +176,11 @@ async function init() {
         doToggleBuilding();
         break;
       case 'i':
-        toggleInfo();
+        doToggleInfo();
         break;
       case 'escape':
         if (infoOverlay.classList.contains('visible')) {
-          toggleInfo();
+          doToggleInfo();
         } else {
           closePanel();
         }

@@ -29,15 +29,7 @@ const CATEGORY_LABELS = {
 export function initHUD() {
   hudEl = document.getElementById('hud');
 
-  // Add keyboard hints
-  const hints = document.createElement('div');
-  hints.id = 'keyboard-hints';
-  hints.innerHTML = `
-    <kbd>I</kbd> info &middot; <kbd>T</kbd> color overlay &middot; <kbd>B</kbd> building<br>
-    <kbd>C</kbd> composition &middot; <kbd>A</kbd> axes &middot; <kbd>R</kbd> refresh<br>
-    <kbd>F</kbd> fit &middot; <kbd>Esc</kbd> close &middot; Dbl-click: focus
-  `;
-  document.body.appendChild(hints);
+  // Keyboard hints removed — toolbar buttons are the primary UI now
 }
 
 export function setViolationCount(count) {

@@ -510,21 +510,33 @@ html, body {
 }
 
 #toolbar button {
-  width: 36px;
-  height: 36px;
+  height: 32px;
+  padding: 0 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
   background: rgba(255, 255, 255, 0.85);
   color: #555;
   font-family: 'Courier New', monospace;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 11px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 5px;
   transition: all 0.15s;
   backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+
+#toolbar button .btn-icon {
+  font-weight: bold;
+  font-size: 12px;
+  width: 16px;
+  text-align: center;
+  opacity: 0.5;
+}
+
+#toolbar button .btn-label {
+  font-weight: normal;
 }
 
 #toolbar button:hover {
@@ -537,6 +549,10 @@ html, body {
   background: #333;
   color: #fff;
   border-color: #333;
+}
+
+#toolbar button.active .btn-icon {
+  opacity: 1;
 }
 
 /* ── IFC Drop Zone ── */
