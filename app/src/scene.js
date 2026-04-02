@@ -13,30 +13,30 @@ export function createScene(canvas) {
     50,
     window.innerWidth / window.innerHeight,
     0.01,
-    100
+    500
   );
-  // Position to see the full north face (wall is ~1.14m wide in seed data, 1m tall section)
-  camera.position.set(0.6, 0.5, 2.5);
+  // Position to see the full north face (wall is 20m long × 1m tall)
+  camera.position.set(10, 0.5, 25);
 
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.target.set(0.5, 0.4, 0);
+  controls.target.set(10, 0.5, 0);
 
   // Lighting
   const ambient = new THREE.AmbientLight(0xffffff, 0.6);
   scene.add(ambient);
 
   const directional = new THREE.DirectionalLight(0xffffff, 0.8);
-  directional.position.set(2, 3, 4);
+  directional.position.set(10, 5, 20);
   scene.add(directional);
 
   const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
-  fillLight.position.set(-2, 1, -2);
+  fillLight.position.set(-5, 3, -10);
   scene.add(fillLight);
 
   // Axes helper (toggled with A key)
-  const axesHelper = new THREE.AxesHelper(1);
+  const axesHelper = new THREE.AxesHelper(5);
   axesHelper.visible = false;
   scene.add(axesHelper);
 

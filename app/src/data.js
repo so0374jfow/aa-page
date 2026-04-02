@@ -50,13 +50,17 @@ export async function loadLocalData() {
       fetch('./data/elements.json'),
       fetch('./data/slots.json')
     ]);
+    if (!elemRes.ok || !slotsRes.ok) {
+      console.warn('Local data not found, trying remote');
+      return fetchData();
+    }
     return {
       elements: await elemRes.json(),
       slots: await slotsRes.json()
     };
   } catch (e) {
-    console.warn('Local data fetch error:', e);
-    return null;
+    console.warn('Local data fetch error, trying remote:', e);
+    return fetchData();
   }
 }
 
