@@ -5,21 +5,34 @@ import { initPanel, closePanel, isPanelOpen } from './panel.js';
 import { initHUD, updateHUD, setViolationCount } from './hud.js';
 import { toggleCompositionOverlay, recalculateViolations } from './composition.js';
 
+const EMPTY_DATA = {
+  elements: { metadata: { total_elements: 0, total_spend_chf: 0, estimated_coverage_m2: 0, last_updated: '' }, elements: [] },
+  slots: { slots: [] }
+};
+
 async function init() {
   const canvas = document.getElementById('wall-canvas');
   const { renderer, scene, camera, controls, axesHelper } = createScene(canvas);
 
-  // Load initial data (local files during dev, or bundled)
-  let data = await loadLocalData();
-
-  // Fallback: try fetching from known paths
-  if (!data) {
-    console.warn('No local data available');
-    data = {
-      elements: { metadata: { total_elements: 0, total_spend_chf: 0, estimated_coverage_m2: 0, last_updated: '' }, elements: [] },
-      slots: { slots: [] }
-    };
+  // Start render loop immediately so background is never black
+  const clock = { start: performance.now() };
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsed = (performance.now() - clock.start) / 1000;
+    controls.update();
+    updatePulses(elapsed);
+    renderer.render(scene, camera);
   }
+  animate();
+
+  // Load data (local first, then remote fallback)
+  let data;
+  try {
+    data = await loadLocalData();
+  } catch (e) {
+    console.warn('Data load failed:', e);
+  }
+  if (!data) data = EMPTY_DATA;
 
   // Build the 3D wall
   buildWall(scene, data.slots, data.elements);
@@ -46,7 +59,6 @@ async function init() {
 
   // Keyboard shortcuts
   window.addEventListener('keydown', (e) => {
-    // Ignore if typing in textarea/input
     if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
 
     switch (e.key.toLowerCase()) {
@@ -70,19 +82,10 @@ async function init() {
     }
   });
 
-  // Render loop
-  const clock = { start: performance.now() };
-  function animate() {
-    requestAnimationFrame(animate);
-    const elapsed = (performance.now() - clock.start) / 1000;
-    controls.update();
-    updatePulses(elapsed);
-    renderer.render(scene, camera);
+  // Fit camera after geometry is ready
+  if (slotMeshes.size > 0) {
+    setTimeout(() => fitCameraToWall(camera, controls, slotMeshes), 100);
   }
-  animate();
-
-  // Fit camera after a brief delay to ensure geometry is ready
-  setTimeout(() => fitCameraToWall(camera, controls, slotMeshes), 100);
 }
 
 init().catch(console.error);
