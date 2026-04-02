@@ -9,6 +9,27 @@ export const slotMeshes = new Map();
 
 const gltfLoader = new GLTFLoader();
 
+// Color overlay toggle state
+let colorOverlayVisible = false;
+
+export function setColorOverlayVisible(visible) {
+  colorOverlayVisible = visible;
+  for (const entry of slotMeshes.values()) {
+    if (entry.colorBox) {
+      entry.colorBox.visible = visible;
+    }
+  }
+}
+
+export function isColorOverlayVisible() {
+  return colorOverlayVisible;
+}
+
+export function toggleColorOverlay() {
+  setColorOverlayVisible(!colorOverlayVisible);
+  return colorOverlayVisible;
+}
+
 export function buildWall(scene, slotsData, elementsData) {
   const elementMap = new Map();
   if (elementsData?.elements) {
@@ -104,11 +125,11 @@ function createSlotMesh(slot, element) {
 }
 
 /**
- * Async-load a GLB model and replace the placeholder box in the slot.
+ * Async-load a GLB model into the slot, keeping original textures.
+ * The existing colored box becomes a toggleable overlay.
  * Falls back silently to the colored box if loading fails.
  */
 function loadMeshForSlot(entry, meshPath) {
-  // Resolve URL: relative path works for both dev (public/) and production
   const url = `./${meshPath}`;
 
   gltfLoader.load(
@@ -144,28 +165,33 @@ function loadMeshForSlot(entry, meshPath) {
       model.position.y -= modelCenter.y * scale;
       model.position.z -= modelCenter.z * scale;
 
-      // Apply element color to all mesh materials
-      const color = getElementColor(entry.element);
+      // Keep original textures — only tag meshes for raycasting
       model.traverse((child) => {
         if (child.isMesh) {
-          child.material = new THREE.MeshStandardMaterial({
-            color,
-            roughness: 0.6,
-            metalness: 0.15
-          });
           child.userData = { slotId: entry.slot.id };
         }
       });
 
-      // Replace box with loaded model
-      entry.group.remove(entry.mesh);
+      // Convert existing colored box to a transparent overlay (hidden by default)
+      const box = entry.mesh;
+      box.material.dispose();
+      box.material = new THREE.MeshBasicMaterial({
+        color: getElementColor(entry.element),
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false,
+      });
+      box.renderOrder = 1;
+      box.visible = colorOverlayVisible;
+      entry.colorBox = box;
+
+      // Add GLB model to group
       entry.group.add(model);
-      entry.mesh = model; // Update reference (for raycasting)
+      entry.glbModel = model;
       entry.hasGLB = true;
     },
-    undefined, // onProgress
+    undefined,
     (error) => {
-      // Silent fallback — keep the colored box
       console.warn(`GLB load failed for ${entry.slot.id}: ${error.message}`);
     }
   );

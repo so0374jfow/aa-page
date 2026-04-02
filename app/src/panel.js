@@ -19,15 +19,16 @@ export function initPanel(camera, canvasEl) {
 
     raycaster.setFromCamera(mouse, camera);
 
-    const meshes = [];
+    // Collect all groups for recursive intersection (works with both boxes and GLB children)
+    const groups = [];
     for (const entry of slotMeshes.values()) {
-      meshes.push(entry.mesh);
+      groups.push(entry.group);
     }
 
-    const intersects = raycaster.intersectObjects(meshes);
+    const intersects = raycaster.intersectObjects(groups, true);
     if (intersects.length > 0) {
       const slotId = intersects[0].object.userData.slotId;
-      openPanel(slotId);
+      if (slotId) openPanel(slotId);
     }
   });
 }

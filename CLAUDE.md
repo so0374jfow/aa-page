@@ -15,7 +15,7 @@ aa-page/
 ├── CLAUDE.md                    # This file
 ├── app/                         # Vite + Three.js frontend
 │   ├── index.html
-│   ├── package.json             # Only deps: three, vite
+│   ├── package.json             # Deps: three, vite, web-ifc
 │   ├── vite.config.js           # base: '/aa-page/' for GH Pages
 │   ├── generate_slots.mjs       # Slot grid generator script
 │   └── src/
@@ -27,6 +27,7 @@ aa-page/
 │       ├── hud.js               # Top-left stats HUD
 │       ├── composition.js       # 5 composition rules, violation overlay
 │       ├── colors.js            # Status + category colour maps
+│       ├── building.js          # IFC/GLB building model loader (behind wall)
 │       └── style.css            # All styling (panel, HUD, lightbox)
 ├── agent/
 │   ├── add_element.py           # Add new element, download images, git commit
@@ -37,7 +38,8 @@ aa-page/
 │   ├── elements.json            # Element records + metadata (the "database")
 │   ├── slots.json               # Wall grid definition (~1400 slots, 3 faces)
 │   ├── images/                  # Downloaded seller images (EL-XXXX_01.jpg)
-│   └── meshes/                  # Generated GLB meshes (EL-XXXX.glb)
+│   ├── meshes/                  # Generated GLB meshes (EL-XXXX.glb)
+│   └── models/                  # Building IFC/GLB (building.ifc or building.glb)
 ├── docs/                        # Protocol and brief documents
 └── .github/workflows/
     └── deploy.yml               # Auto-deploy on push to main
@@ -95,7 +97,7 @@ Calls fal.ai TripoSR to generate GLB from element photos. Eligible when APPROVED
 
 ### Dependencies
 
-**Only two npm packages allowed: `three` and `vite`.** No React, no Vue, no framework. If something seems to need a third package, ask before adding it.
+**Three npm packages: `three`, `vite`, and `web-ifc`.** No React, no Vue, no framework. `web-ifc` is for IFC building model support (dynamically loaded, only when IFC files are used). If something seems to need another package, ask before adding it.
 
 **Python agent scripts use only stdlib** (json, urllib, subprocess, pathlib, argparse). No pip dependencies.
 
@@ -159,7 +161,11 @@ The generated GLB is scaled to the element's most accurate dimensions (`dimensio
 
 ### Keyboard Shortcuts
 
-`C` composition overlay | `A` axes | `R` refresh | `F` fit camera | `Esc` close panel
+`I` project info | `T` color overlay | `B` building toggle | `C` composition overlay | `A` axes | `R` refresh | `F` fit camera | `Esc` close panel | Double-click: fly to object
+
+### Building Model
+
+Place an IFC or GLB file at `data/models/building.ifc` or `data/models/building.glb` to render the building behind the wall. The model loads automatically. Users can also drag-and-drop .ifc or .glb files onto the page. Toggle visibility with `B` key.
 
 ## Git Conventions
 
