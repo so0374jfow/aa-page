@@ -1,4 +1,4 @@
-// Generate slots.json with 3 wall faces, each 20m x 1m, packed with slots
+// Generate slots.json with 3 balcony railings, each 20m x 1m, stacked at 3 story heights
 // Run: node generate_slots.mjs > ../data/slots.json
 
 function rand(min, max) {
@@ -21,65 +21,70 @@ function slotDims(type) {
   }
 }
 
-function fireZone(heightM) {
-  if (heightM < 3) return 1;
-  if (heightM < 6) return 2;
+function fireZone(absoluteHeightM) {
+  if (absoluteHeightM < 3) return 1;
+  if (absoluteHeightM < 6) return 2;
   return 3;
 }
 
 const GAP = 5; // 5mm gap between slots
 
-function packFace(face, baseX, baseZ) {
-  const WALL_W = 20000; // 20m in mm
-  const WALL_H = 1000;  // 1m in mm
+// Story heights in mm (floor level where railing starts)
+const STORIES = [
+  { name: 'level-1', label: 'Ground floor',  baseY: 0 },
+  { name: 'level-2', label: 'First floor',   baseY: 3500 },  // 3.5m up
+  { name: 'level-3', label: 'Second floor',  baseY: 7000 },  // 7m up
+];
+
+function packRailing(story, storyIndex) {
+  const RAILING_W = 20000; // 20m in mm
+  const RAILING_H = 1000;  // 1m in mm
   const slots = [];
   let slotNum = 1;
+  const prefix = `SLOT-L${storyIndex + 1}`;
 
-  // Pack rows bottom to top
-  let y = 0;
-  while (y < WALL_H) {
-    // Determine row height from a random slot type
+  // Pack rows bottom to top within the railing
+  let localY = 0;
+  while (localY < RAILING_H) {
     const rowType = pickType();
     const rowDims = slotDims(rowType);
     let rowHeight = rowDims.height;
 
-    // Ensure we don't exceed wall height
-    if (y + rowHeight > WALL_H) {
-      rowHeight = WALL_H - y;
+    if (localY + rowHeight > RAILING_H) {
+      rowHeight = RAILING_H - localY;
       if (rowHeight < 40) break;
     }
 
-    // Pack slots left to right in this row
+    // Pack slots left to right
     let x = 0;
-    while (x < WALL_W) {
+    while (x < RAILING_W) {
       const type = pickType();
       let dims = slotDims(type);
 
-      // Constrain height to row height
       dims.height = Math.min(dims.height, rowHeight);
       if (dims.height < 40) dims.height = rowHeight;
 
-      // Ensure we don't exceed wall width
-      if (x + dims.width > WALL_W) {
-        dims.width = WALL_W - x;
+      if (x + dims.width > RAILING_W) {
+        dims.width = RAILING_W - x;
         if (dims.width < 30) break;
       }
 
-      const heightM = y / 1000;
-      const id = `SLOT-${face.charAt(0).toUpperCase()}-${String(slotNum).padStart(3, '0')}`;
+      const absoluteY = story.baseY + localY;
+      const absoluteHeightM = absoluteY / 1000;
+      const id = `${prefix}-${String(slotNum).padStart(3, '0')}`;
 
       slots.push({
         id,
-        face,
+        face: story.name,
         type,
         position: {
-          x: baseX + (face === 'west' ? 0 : (face === 'east' ? 0 : x)),
-          y: y,
-          z: baseZ + (face === 'north' ? 0 : x)
+          x: x,
+          y: absoluteY,
+          z: 0
         },
         dimensions: dims,
-        height_m: parseFloat(heightM.toFixed(3)),
-        fire_zone: fireZone(heightM),
+        height_m: parseFloat(absoluteHeightM.toFixed(3)),
+        fire_zone: fireZone(absoluteHeightM),
         status: 'empty',
         element_id: null,
         adjacent: []
@@ -89,40 +94,32 @@ function packFace(face, baseX, baseZ) {
       x += dims.width + GAP;
     }
 
-    y += rowHeight + GAP;
+    localY += rowHeight + GAP;
   }
 
   return slots;
 }
 
-// Compute adjacency: two slots are adjacent if they share an edge (within tolerance)
+// Compute adjacency within each railing
 function computeAdjacency(slots) {
   const TOLERANCE = 20; // mm
 
   for (let i = 0; i < slots.length; i++) {
     const a = slots[i];
-    // Only compare within same face
     for (let j = i + 1; j < slots.length; j++) {
       const b = slots[j];
       if (a.face !== b.face) continue;
 
-      // Get bounding boxes in the face's local 2D space
-      let ax, aw, ay, ah, bx, bw, by, bh;
-      if (a.face === 'north') {
-        ax = a.position.x; aw = a.dimensions.width;
-        bx = b.position.x; bw = b.dimensions.width;
-      } else {
-        ax = a.position.z; aw = a.dimensions.width;
-        bx = b.position.z; bw = b.dimensions.width;
-      }
-      ay = a.position.y; ah = a.dimensions.height;
-      by = b.position.y; bh = b.dimensions.height;
+      const ax = a.position.x, aw = a.dimensions.width;
+      const bx = b.position.x, bw = b.dimensions.width;
+      const ay = a.position.y, ah = a.dimensions.height;
+      const by = b.position.y, bh = b.dimensions.height;
 
-      // Check horizontal adjacency (side by side, overlapping in Y)
+      // Horizontal adjacency (side by side, overlapping in Y)
       const hAdj = (Math.abs((ax + aw) - bx) < TOLERANCE || Math.abs((bx + bw) - ax) < TOLERANCE);
       const yOverlap = ay < (by + bh) && by < (ay + ah);
 
-      // Check vertical adjacency (stacked, overlapping in X)
+      // Vertical adjacency (stacked, overlapping in X)
       const vAdj = (Math.abs((ay + ah) - by) < TOLERANCE || Math.abs((by + bh) - ay) < TOLERANCE);
       const xOverlap = ax < (bx + bw) && bx < (ax + aw);
 
@@ -134,19 +131,19 @@ function computeAdjacency(slots) {
   }
 }
 
-// Generate three faces
-const northSlots = packFace('north', 0, 0);
-const eastSlots = packFace('east', 20000, 0);
-const westSlots = packFace('west', -200, 0);
+// Generate three railings at different story heights
+const allLevels = STORIES.map((story, i) => {
+  const slots = packRailing(story, i);
+  computeAdjacency(slots);
+  return { story, slots };
+});
 
-const allSlots = [...northSlots, ...eastSlots, ...westSlots];
-
-// Compute adjacency within each face
-computeAdjacency(northSlots);
-computeAdjacency(eastSlots);
-computeAdjacency(westSlots);
-
+const allSlots = allLevels.flatMap(l => l.slots);
 const output = { slots: allSlots };
+
 console.log(JSON.stringify(output, null, 2));
 
-process.stderr.write(`Generated ${allSlots.length} slots: ${northSlots.length} north, ${eastSlots.length} east, ${westSlots.length} west\n`);
+for (const { story, slots } of allLevels) {
+  process.stderr.write(`${story.name} (${story.label}, base ${story.baseY}mm): ${slots.length} slots\n`);
+}
+process.stderr.write(`Total: ${allSlots.length} slots\n`);

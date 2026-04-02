@@ -15,24 +15,24 @@ export function createScene(canvas) {
     0.01,
     500
   );
-  // Position to see the full north face (wall is 20m long × 1m tall)
-  camera.position.set(10, 0.5, 25);
+  // Position to see all 3 balcony railings (20m wide, stacked at 0m / 3.5m / 7m)
+  camera.position.set(10, 4, 30);
 
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.target.set(10, 0.5, 0);
+  controls.target.set(10, 4, 0);
 
   // Lighting
   const ambient = new THREE.AmbientLight(0xffffff, 0.6);
   scene.add(ambient);
 
   const directional = new THREE.DirectionalLight(0xffffff, 0.8);
-  directional.position.set(10, 5, 20);
+  directional.position.set(10, 12, 20);
   scene.add(directional);
 
   const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
-  fillLight.position.set(-5, 3, -10);
+  fillLight.position.set(-5, 6, -10);
   scene.add(fillLight);
 
   // Axes helper (toggled with A key)

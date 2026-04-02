@@ -76,7 +76,7 @@ function renderEmptySlot(slot) {
   return `
     <div class="empty-slot-info">
       <h3>${slot.id}</h3>
-      <p>Type ${slot.type} &middot; ${slot.face} face</p>
+      <p>Type ${slot.type} &middot; ${formatFace(slot.face)}</p>
       <p>${slot.dimensions.width} &times; ${slot.dimensions.height} &times; ${slot.dimensions.depth} mm</p>
       <p>Fire Zone ${slot.fire_zone}</p>
       <p style="margin-top:20px;color:#555">Unassigned</p>
@@ -185,6 +185,16 @@ function renderElementDetail(slot, el) {
   html += `<textarea class="architect-notes-input" placeholder="Add notes..."></textarea>`;
 
   return html;
+}
+
+function formatFace(face) {
+  const labels = {
+    'level-1': 'Level 1 (Ground)',
+    'level-2': 'Level 2 (First floor)',
+    'level-3': 'Level 3 (Second floor)',
+    'north': 'North', 'east': 'East', 'west': 'West'
+  };
+  return labels[face] || face;
 }
 
 function formatCHF(val) {
