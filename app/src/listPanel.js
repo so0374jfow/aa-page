@@ -21,6 +21,10 @@ export function initListPanel(cam, ctrl) {
 
   sortSelect?.addEventListener('change', () => render());
   filterSelect?.addEventListener('change', () => render());
+
+  // Close button (visible on mobile)
+  const closeBtn = document.getElementById('list-close');
+  closeBtn?.addEventListener('click', () => closeListPanel());
 }
 
 export function updateListData(elementsData) {
@@ -36,6 +40,10 @@ export function toggleListPanel() {
     render();
   }
   return listEl?.classList.contains('open');
+}
+
+export function closeListPanel() {
+  listEl?.classList.remove('open');
 }
 
 export function isListOpen() {

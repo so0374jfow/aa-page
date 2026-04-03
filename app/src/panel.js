@@ -6,6 +6,11 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let panelEl = null;
 let currentSlotId = null;
+let onPanelOpen = null;
+
+export function setOnPanelOpen(callback) {
+  onPanelOpen = callback;
+}
 
 export function initPanel(camera, canvasEl) {
   panelEl = document.getElementById('detail-panel');
@@ -64,6 +69,7 @@ export function openPanel(slotId) {
   }
 
   panelEl.innerHTML = html;
+  if (onPanelOpen) onPanelOpen();
   panelEl.classList.add('open');
 
   // Bind architect notes save

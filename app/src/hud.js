@@ -29,7 +29,16 @@ const CATEGORY_LABELS = {
 export function initHUD() {
   hudEl = document.getElementById('hud');
 
-  // Keyboard hints removed — toolbar buttons are the primary UI now
+  // On mobile, start collapsed and toggle on tap
+  const mobileQuery = window.matchMedia('(max-width: 768px)');
+  if (mobileQuery.matches) {
+    hudEl?.classList.add('hud-collapsed');
+  }
+  hudEl?.addEventListener('click', () => {
+    if (mobileQuery.matches) {
+      hudEl.classList.toggle('hud-collapsed');
+    }
+  });
 }
 
 export function setViolationCount(count) {

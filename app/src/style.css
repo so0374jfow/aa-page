@@ -920,3 +920,222 @@ html, body {
   display: block;
   margin-top: 8px;
 }
+
+/* ── List Panel Close Button ── */
+#list-panel .list-close {
+  display: none;
+  background: none;
+  border: 1px solid #ccc;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+#list-panel .list-close:hover {
+  color: #333;
+  border-color: #999;
+}
+
+/* ── Mobile Responsive ── */
+@media (max-width: 768px) {
+
+  /* -- Toolbar: icon-only, larger touch targets -- */
+  #toolbar {
+    bottom: 10px;
+    gap: 4px;
+    padding: 0 8px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  #toolbar button {
+    height: 44px;
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 8px;
+  }
+
+  #toolbar button .btn-label {
+    display: none;
+  }
+
+  #toolbar button .btn-icon {
+    font-size: 16px;
+    width: auto;
+    opacity: 0.7;
+  }
+
+  #toolbar button.active .btn-icon {
+    opacity: 1;
+  }
+
+  /* -- List Panel: bottom sheet -- */
+  #list-panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    max-height: 85vh;
+    transform: translateY(100%);
+    border-right: none;
+    border-top: 1px solid #ddd;
+    border-radius: 16px 16px 0 0;
+    z-index: 200;
+  }
+
+  #list-panel.open {
+    transform: translateY(0);
+  }
+
+  #list-panel .list-header {
+    border-radius: 16px 16px 0 0;
+    padding: 16px 16px 8px;
+  }
+
+  /* Drag handle indicator */
+  #list-panel .list-header::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: #ccc;
+    border-radius: 2px;
+    margin: 0 auto 12px;
+  }
+
+  #list-panel .list-close {
+    display: flex;
+  }
+
+  /* Don't push HUD when list is open on mobile */
+  #list-panel.open ~ #hud {
+    left: 12px;
+  }
+
+  /* Don't shrink detail panel on mobile */
+  #list-panel.open ~ #detail-panel.open {
+    max-width: 100%;
+  }
+
+  /* -- Detail Panel: bottom sheet -- */
+  #detail-panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    max-height: 85vh;
+    transform: translateY(100%);
+    border-left: none;
+    border-top: 1px solid #ddd;
+    border-radius: 16px 16px 0 0;
+    padding: 20px 20px 80px;
+  }
+
+  #detail-panel.open {
+    transform: translateY(0);
+  }
+
+  /* Drag handle indicator */
+  #detail-panel::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: #ccc;
+    border-radius: 2px;
+    margin: 0 auto 12px;
+  }
+
+  #detail-panel .panel-close {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  /* -- HUD: compact collapsible -- */
+  #hud {
+    top: 10px;
+    left: 12px;
+    max-width: 240px;
+    font-size: 11px;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  #hud.hud-collapsed .hud-section:not(:first-child) {
+    display: none;
+  }
+
+  #hud.hud-collapsed .hud-section:first-child {
+    margin-bottom: 0;
+  }
+
+  /* Collapse indicator */
+  #hud::after {
+    content: '▼';
+    font-size: 8px;
+    color: #aaa;
+    position: absolute;
+    top: 4px;
+    right: -14px;
+  }
+
+  #hud.hud-collapsed::after {
+    content: '▶';
+  }
+
+  /* -- Info Overlay: mobile-optimized -- */
+  #info-overlay {
+    padding: 20px 16px;
+    max-width: 100%;
+    width: 94%;
+    max-height: 90vh;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  #info-overlay h1 {
+    font-size: 16px;
+    padding-right: 32px;
+  }
+
+  #info-overlay #info-close {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  #info-overlay .info-legend {
+    gap: 4px 12px;
+    font-size: 10px;
+  }
+
+  #info-overlay .workflow-diagram {
+    font-size: 10px;
+  }
+
+  /* -- Keyboard hints: hidden on mobile -- */
+  #keyboard-hints {
+    display: none;
+  }
+
+  /* -- Lightbox: touch friendly close -- */
+  #lightbox img {
+    max-width: 95%;
+    max-height: 85%;
+  }
+}

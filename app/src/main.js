@@ -2,11 +2,13 @@ import * as THREE from 'three';
 import { createScene, fitCameraToWall, flyToObject, updateFlyTo } from './scene.js';
 import { buildWall, slotMeshes, updatePulses, toggleColorOverlay, isColorOverlayVisible } from './wall.js';
 import { loadLocalData, initDataPolling, setInitialData, forceRefresh } from './data.js';
-import { initPanel, closePanel, isPanelOpen } from './panel.js';
+import { initPanel, closePanel, isPanelOpen, setOnPanelOpen } from './panel.js';
 import { initHUD, updateHUD, setViolationCount } from './hud.js';
 import { toggleCompositionOverlay, recalculateViolations } from './composition.js';
 import { initBuilding, toggleBuilding, isBuildingVisible } from './building.js';
-import { initListPanel, updateListData, toggleListPanel, isListOpen } from './listPanel.js';
+import { initListPanel, updateListData, toggleListPanel, closeListPanel, isListOpen } from './listPanel.js';
+
+const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
 
 const EMPTY_DATA = {
   elements: { metadata: { total_elements: 0, total_spend_chf: 0, estimated_coverage_m2: 0, last_updated: '' }, elements: [] },
@@ -46,6 +48,16 @@ async function init() {
 
   // Init subsystems
   initPanel(camera, canvas);
+  setOnPanelOpen(() => {
+    if (isMobile()) {
+      closeListPanel();
+      btnList?.classList.remove('active');
+      if (infoOverlay?.classList.contains('visible')) {
+        infoOverlay.classList.remove('visible');
+        btnInfo?.classList.remove('active');
+      }
+    }
+  });
   initListPanel(camera, controls);
   initHUD();
   updateHUD(data.elements);
@@ -109,11 +121,26 @@ async function init() {
 
   // ── Action functions ──
   function doToggleList() {
+    if (isMobile() && !isListOpen()) {
+      // Close other panels first on mobile
+      closePanel();
+      if (infoOverlay.classList.contains('visible')) {
+        infoOverlay.classList.remove('visible');
+        btnInfo?.classList.remove('active');
+      }
+    }
     const on = toggleListPanel();
     btnList?.classList.toggle('active', on);
   }
 
   function doToggleInfo() {
+    const willOpen = !infoOverlay.classList.contains('visible');
+    if (isMobile() && willOpen) {
+      // Close other panels first on mobile
+      closePanel();
+      closeListPanel();
+      btnList?.classList.remove('active');
+    }
     infoOverlay.classList.toggle('visible');
     btnInfo?.classList.toggle('active', infoOverlay.classList.contains('visible'));
   }
@@ -166,8 +193,10 @@ async function init() {
     localStorage.setItem('spolia_visited', '1');
   }
 
-  // Open list view by default
-  doToggleList();
+  // Open list view by default (skip on mobile — screen too small)
+  if (!isMobile()) {
+    doToggleList();
+  }
 
   // ── Keyboard shortcuts ──
   window.addEventListener('keydown', (e) => {
