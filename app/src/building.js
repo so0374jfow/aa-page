@@ -123,10 +123,11 @@ function applyAlignmentTransform(model) {
 
   const t = buildingConfig?.building_transform || {};
 
-  // Offset to place building center at wall center
+  // Offset to place building behind the wall (negative Z = away from camera)
+  // Wall face is at Z=0, camera looks from +Z. Building goes to -Z.
   const offsetX = wallCenterX - modelCenter.x + (t.offset_x_mm || 0) * MM;
   const offsetY = -modelCenter.y + (t.offset_y_mm || 0) * MM;
-  const offsetZ = -modelCenter.z + (t.offset_z_mm || 500) * MM;
+  const offsetZ = -modelCenter.z - (t.offset_z_mm || 500) * MM;
 
   buildingGroup.position.set(offsetX, offsetY, offsetZ);
 

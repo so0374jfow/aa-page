@@ -6,6 +6,7 @@ import { initPanel, closePanel, isPanelOpen } from './panel.js';
 import { initHUD, updateHUD, setViolationCount } from './hud.js';
 import { toggleCompositionOverlay, recalculateViolations } from './composition.js';
 import { initBuilding, toggleBuilding, isBuildingVisible } from './building.js';
+import { initListPanel, updateListData, toggleListPanel, isListOpen } from './listPanel.js';
 
 const EMPTY_DATA = {
   elements: { metadata: { total_elements: 0, total_spend_chf: 0, estimated_coverage_m2: 0, last_updated: '' }, elements: [] },
@@ -45,8 +46,10 @@ async function init() {
 
   // Init subsystems
   initPanel(camera, canvas);
+  initListPanel(camera, controls);
   initHUD();
   updateHUD(data.elements);
+  updateListData(data.elements);
 
   // Initial violation count
   const violations = recalculateViolations();
@@ -60,6 +63,7 @@ async function init() {
     const v = recalculateViolations();
     setViolationCount(v);
     updateHUD(newData.elements);
+    updateListData(newData.elements);
   });
 
   // ── Double-click to focus on object ──
@@ -92,6 +96,7 @@ async function init() {
   });
 
   // ── UI elements ──
+  const btnList = document.getElementById('btn-list');
   const btnInfo = document.getElementById('btn-info');
   const btnColor = document.getElementById('btn-color');
   const btnBuilding = document.getElementById('btn-building');
@@ -103,6 +108,11 @@ async function init() {
   const infoClose = document.getElementById('info-close');
 
   // ── Action functions ──
+  function doToggleList() {
+    const on = toggleListPanel();
+    btnList?.classList.toggle('active', on);
+  }
+
   function doToggleInfo() {
     infoOverlay.classList.toggle('visible');
     btnInfo?.classList.toggle('active', infoOverlay.classList.contains('visible'));
@@ -139,6 +149,7 @@ async function init() {
   }
 
   // ── Toolbar click handlers ──
+  btnList?.addEventListener('click', doToggleList);
   btnInfo?.addEventListener('click', doToggleInfo);
   btnColor?.addEventListener('click', doToggleColor);
   btnBuilding?.addEventListener('click', doToggleBuilding);
@@ -160,6 +171,9 @@ async function init() {
     if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
 
     switch (e.key.toLowerCase()) {
+      case 'l':
+        doToggleList();
+        break;
       case 'c':
         doToggleComposition();
         break;
