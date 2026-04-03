@@ -1,5 +1,5 @@
 {
-  "_comment": "Alignment config for W45 building (Vectorworks IFC4). Balcony slab elevations from IFC storeys.",
+  "_comment": "Alignment config for W45 building (Vectorworks IFC4). South facade balconies face camera.",
 
   "balcony_levels": [
     {
@@ -24,16 +24,16 @@
 
   "railing_length_mm": 20000,
 
-  "north_facade": {
-    "_comment": "Z position of the north facade in IFC coordinates. Adjust after inspecting the model.",
+  "south_facade": {
+    "_comment": "South facade with balconies faces camera after 180° rotation.",
     "ifc_z_mm": 0
   },
 
   "building_transform": {
-    "_comment": "Additional transform for fine-tuning. offset_z places building behind wall face.",
+    "_comment": "Rotated 180° so south facade (balconies) faces camera. Front face (bbox.max.z) placed at Z=0.",
     "offset_x_mm": 0,
     "offset_y_mm": 0,
-    "offset_z_mm": -5000,
-    "rotation_y_deg": 0
+    "offset_z_mm": 0,
+    "rotation_y_deg": 180
   }
 }
