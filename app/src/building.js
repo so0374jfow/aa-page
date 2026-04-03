@@ -101,51 +101,67 @@ async function loadConfig() {
  *
  * The wall sits at X: 0–20 units, Y: per balcony_levels, Z: 0 (face).
  * IFC models often use real-world survey coordinates (large offsets).
- * We auto-center the building behind the wall using its bounding box.
+ *
+ * Strategy:
+ * 1. Apply rotation to model FIRST (around its own center)
+ * 2. Recompute bounding box of rotated model
+ * 3. Position so balcony edge aligns with wall face at Z=0,
+ *    building body extends behind (negative Z)
  */
 function applyAlignmentTransform(model) {
-  // Compute model bounding box BEFORE any group transform
+  const t = buildingConfig?.building_transform || {};
+
+  // Step 1: Apply rotation to model around its own center
+  if (t.rotation_y_deg) {
+    const preBbox = new THREE.Box3().setFromObject(model);
+    const preCenter = new THREE.Vector3();
+    preBbox.getCenter(preCenter);
+
+    // Translate so center is at origin, rotate, translate back
+    model.position.sub(preCenter);
+    const rotGroup = new THREE.Group();
+    rotGroup.rotation.y = (t.rotation_y_deg * Math.PI) / 180;
+    rotGroup.updateMatrixWorld(true);
+
+    // Apply rotation directly to model's matrix
+    model.applyMatrix4(new THREE.Matrix4().makeTranslation(-preCenter.x, -preCenter.y, -preCenter.z));
+    model.applyMatrix4(new THREE.Matrix4().makeRotationY((t.rotation_y_deg * Math.PI) / 180));
+    model.applyMatrix4(new THREE.Matrix4().makeTranslation(preCenter.x, preCenter.y, preCenter.z));
+    model.position.set(0, 0, 0);
+  }
+
+  // Step 2: Compute bounding box of (now rotated) model
   const bbox = new THREE.Box3().setFromObject(model);
   const modelCenter = new THREE.Vector3();
   bbox.getCenter(modelCenter);
   const modelSize = new THREE.Vector3();
   bbox.getSize(modelSize);
 
-  console.log('Building bbox:', {
+  console.log('Building bbox (after rotation):', {
     min: `(${(bbox.min.x/MM).toFixed(0)}, ${(bbox.min.y/MM).toFixed(0)}, ${(bbox.min.z/MM).toFixed(0)})mm`,
     max: `(${(bbox.max.x/MM).toFixed(0)}, ${(bbox.max.y/MM).toFixed(0)}, ${(bbox.max.z/MM).toFixed(0)})mm`,
     size: `${(modelSize.x/MM).toFixed(0)} x ${(modelSize.y/MM).toFixed(0)} x ${(modelSize.z/MM).toFixed(0)}mm`,
   });
 
-  const t = buildingConfig?.building_transform || {};
-
-  // The wall spans X: 0 to 20 units (0–20,000mm)
+  // Step 3: Position the building
   const wallCenterX = 10;
 
-  // Alignment strategy:
   // X: center the building on the wall (X=10)
-  // Y: DON'T move vertically — IFC elevations already match wall levels
-  //    (both use the same config: Erdgeschoss=0, 1.OG=2650, 2.OG=5370)
-  // Z: center the building body on Z=0, then apply config offset.
-  //    We use modelCenter (not bbox.max) because bbox includes terrain
-  //    that extends far beyond the building body.
-  //    offset_z_mm: negative = push building behind wall, positive = pull forward
   const offsetX = wallCenterX - modelCenter.x + (t.offset_x_mm || 0) * MM;
+
+  // Y: DON'T move vertically — IFC elevations already match wall levels
   const offsetY = (t.offset_y_mm || 0) * MM;
-  const offsetZ = -modelCenter.z + (t.offset_z_mm || 0) * MM;
+
+  // Z: Place the building's front face (max Z after rotation) at Z=0,
+  //    so the balcony edge aligns with the wall face.
+  //    Building body extends behind (negative Z).
+  //    offset_z_mm: negative = push building further behind, positive = pull forward
+  const offsetZ = -bbox.max.z + (t.offset_z_mm || 0) * MM;
 
   buildingGroup.position.set(offsetX, offsetY, offsetZ);
+  buildingGroup.rotation.set(0, 0, 0); // rotation already baked into model
 
-  if (t.rotation_y_deg) {
-    // Rotate around the building's center, not origin
-    buildingGroup.position.sub(modelCenter);
-    const euler = new THREE.Euler(0, (t.rotation_y_deg * Math.PI) / 180, 0);
-    buildingGroup.position.applyEuler(euler);
-    buildingGroup.position.add(modelCenter);
-    buildingGroup.rotation.y = (t.rotation_y_deg * Math.PI) / 180;
-  }
-
-  console.log(`Building aligned: front face at Z=0, ground at Y=0, centered at X=${wallCenterX}`);
+  console.log(`Building aligned: front face at Z=${(bbox.max.z/MM).toFixed(0)}mm → Z=0, centered at X=${wallCenterX}`);
 }
 
 // ── Auto-load ──
