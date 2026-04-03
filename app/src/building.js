@@ -111,8 +111,18 @@ async function loadConfig() {
 function applyAlignmentTransform(model) {
   const t = buildingConfig?.building_transform || {};
 
+  // URL query params override config for live tuning:
+  //   ?ox=0&oy=0&oz=2000&ry=180
+  const params = new URLSearchParams(window.location.search);
+  const offsetXmm = params.has('ox') ? parseFloat(params.get('ox')) : (t.offset_x_mm || 0);
+  const offsetYmm = params.has('oy') ? parseFloat(params.get('oy')) : (t.offset_y_mm || 0);
+  const offsetZmm = params.has('oz') ? parseFloat(params.get('oz')) : (t.offset_z_mm || 0);
+  const rotYdeg   = params.has('ry') ? parseFloat(params.get('ry')) : (t.rotation_y_deg || 0);
+
+  console.log(`Building transform: ox=${offsetXmm} oy=${offsetYmm} oz=${offsetZmm} ry=${rotYdeg} (use ?ox=&oy=&oz=&ry= to override)`);
+
   // Step 1: Apply rotation to model around its own center
-  if (t.rotation_y_deg) {
+  if (rotYdeg) {
     const preBbox = new THREE.Box3().setFromObject(model);
     const preCenter = new THREE.Vector3();
     preBbox.getCenter(preCenter);
@@ -120,12 +130,12 @@ function applyAlignmentTransform(model) {
     // Translate so center is at origin, rotate, translate back
     model.position.sub(preCenter);
     const rotGroup = new THREE.Group();
-    rotGroup.rotation.y = (t.rotation_y_deg * Math.PI) / 180;
+    rotGroup.rotation.y = (rotYdeg * Math.PI) / 180;
     rotGroup.updateMatrixWorld(true);
 
     // Apply rotation directly to model's matrix
     model.applyMatrix4(new THREE.Matrix4().makeTranslation(-preCenter.x, -preCenter.y, -preCenter.z));
-    model.applyMatrix4(new THREE.Matrix4().makeRotationY((t.rotation_y_deg * Math.PI) / 180));
+    model.applyMatrix4(new THREE.Matrix4().makeRotationY((rotYdeg * Math.PI) / 180));
     model.applyMatrix4(new THREE.Matrix4().makeTranslation(preCenter.x, preCenter.y, preCenter.z));
     model.position.set(0, 0, 0);
   }
@@ -147,16 +157,16 @@ function applyAlignmentTransform(model) {
   const wallCenterX = 10;
 
   // X: center the building on the wall (X=10)
-  const offsetX = wallCenterX - modelCenter.x + (t.offset_x_mm || 0) * MM;
+  const offsetX = wallCenterX - modelCenter.x + offsetXmm * MM;
 
   // Y: DON'T move vertically — IFC elevations already match wall levels
-  const offsetY = (t.offset_y_mm || 0) * MM;
+  const offsetY = offsetYmm * MM;
 
   // Z: Place the building's front face (max Z after rotation) at Z=0,
   //    so the balcony edge aligns with the wall face.
   //    Building body extends behind (negative Z).
   //    offset_z_mm: negative = push building further behind, positive = pull forward
-  const offsetZ = -bbox.max.z + (t.offset_z_mm || 0) * MM;
+  const offsetZ = -bbox.max.z + offsetZmm * MM;
 
   buildingGroup.position.set(offsetX, offsetY, offsetZ);
   buildingGroup.rotation.set(0, 0, 0); // rotation already baked into model
