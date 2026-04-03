@@ -4,13 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spolia Wall</title>
-  <script type="module" crossorigin src="/aa-page/assets/index-DzRtiynI.js"></script>
-  <link rel="stylesheet" crossorigin href="/aa-page/assets/index-CRgCZjWb.css">
+  <script type="module" crossorigin src="/aa-page/assets/index-C0GXZG4g.js"></script>
+  <link rel="stylesheet" crossorigin href="/aa-page/assets/index-CKBMoZMJ.css">
 </head>
 <body>
   <canvas id="wall-canvas"></canvas>
   <div id="hud"></div>
   <div id="detail-panel"></div>
+
+  <!-- List view panel -->
+  <div id="list-panel">
+    <div class="list-header">
+      <h2>Elements</h2>
+      <div class="list-controls">
+        <select id="list-sort">
+          <option value="id">ID</option>
+          <option value="status">Status</option>
+          <option value="category">Category</option>
+          <option value="price">Price</option>
+        </select>
+        <select id="list-filter">
+          <option value="all">All</option>
+          <option value="PENDING_REVIEW">Pending Review</option>
+          <option value="NEGOTIATING">Negotiating</option>
+          <option value="PURCHASED">Purchased</option>
+          <option value="SHIPPED">Shipped</option>
+          <option value="RECEIVED">Received</option>
+          <option value="ALLOCATED">Allocated</option>
+          <option value="INSTALLED">Installed</option>
+        </select>
+      </div>
+    </div>
+    <div id="list-content"></div>
+  </div>
 
   <!-- Project description overlay -->
   <div id="info-overlay">
@@ -42,6 +68,7 @@
 
   <!-- Toolbar -->
   <div id="toolbar">
+    <button id="btn-list" title="Element list (L)"><span class="btn-icon">L</span><span class="btn-label">List</span></button>
     <button id="btn-info" title="Project info (I)"><span class="btn-icon">i</span><span class="btn-label">Info</span></button>
     <button id="btn-color" title="Toggle color overlay (T)"><span class="btn-icon">T</span><span class="btn-label">Colors</span></button>
     <button id="btn-building" title="Toggle building (B)"><span class="btn-icon">B</span><span class="btn-label">Building</span></button>
