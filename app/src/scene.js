@@ -111,6 +111,8 @@ export function updateFlyTo(camera, controls) {
 
 /**
  * Fly camera to focus on a specific object (by its world bounding box).
+ * On mobile with a bottom panel, shifts the target upward so the object
+ * appears centered in the visible top half of the viewport.
  */
 export function flyToObject(camera, controls, object) {
   const bbox = new THREE.Box3().setFromObject(object);
@@ -124,13 +126,15 @@ export function flyToObject(camera, controls, object) {
   // Get close enough to see detail — 2.5x the object size
   const dist = Math.max(maxDim / (2 * Math.tan(fov / 2)) * 2.5, 0.5);
 
-  const direction = new THREE.Vector3();
-  camera.getWorldDirection(direction);
-  // Approach from roughly the same angle, but towards the object
-  const offset = new THREE.Vector3(0, 0, dist);
-  const camPos = center.clone().add(offset);
+  // On mobile, offset upward so object centers in the visible top half
+  // (bottom 50% is covered by the panel sheet)
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const yOffset = isMobile ? dist * Math.tan(fov * 0.25) : 0;
 
-  flyTo(camera, controls, camPos, center, 0.8);
+  const camPos = new THREE.Vector3(center.x, center.y + yOffset, center.z + dist);
+  const target = new THREE.Vector3(center.x, center.y + yOffset, center.z);
+
+  flyTo(camera, controls, camPos, target, 0.8);
 }
 
 export function fitCameraToWall(camera, controls, slotMeshes) {
@@ -151,6 +155,11 @@ export function fitCameraToWall(camera, controls, slotMeshes) {
   const fov = camera.fov * (Math.PI / 180);
   const dist = maxDim / (2 * Math.tan(fov / 2)) * 1.4;
 
-  const newPos = new THREE.Vector3(center.x, center.y, center.z + dist);
-  flyTo(camera, controls, newPos, center, 1.0);
+  // On mobile, shift upward so wall centers in visible top half
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const yOffset = isMobile ? dist * Math.tan(fov * 0.2) : 0;
+
+  const newPos = new THREE.Vector3(center.x, center.y + yOffset, center.z + dist);
+  const target = new THREE.Vector3(center.x, center.y + yOffset, center.z);
+  flyTo(camera, controls, newPos, target, 1.0);
 }
