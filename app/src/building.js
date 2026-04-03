@@ -126,14 +126,13 @@ function applyAlignmentTransform(model) {
   // X: center the building on the wall (X=10)
   // Y: DON'T move vertically — IFC elevations already match wall levels
   //    (both use the same config: Erdgeschoss=0, 1.OG=2650, 2.OG=5370)
-  //    Only apply manual offset_y_mm for fine-tuning.
-  // Z: place the building's front face (max Z = closest to camera) at Z=0
-  //    so the balcony edges meet the wall face.
-  const gap = (t.offset_z_mm || 0) * MM;
-
+  // Z: center the building body on Z=0, then apply config offset.
+  //    We use modelCenter (not bbox.max) because bbox includes terrain
+  //    that extends far beyond the building body.
+  //    offset_z_mm: negative = push building behind wall, positive = pull forward
   const offsetX = wallCenterX - modelCenter.x + (t.offset_x_mm || 0) * MM;
   const offsetY = (t.offset_y_mm || 0) * MM;
-  const offsetZ = -bbox.max.z - gap;
+  const offsetZ = -modelCenter.z + (t.offset_z_mm || 0) * MM;
 
   buildingGroup.position.set(offsetX, offsetY, offsetZ);
 
@@ -181,6 +180,19 @@ function loadGLB(url) {
       url,
       (gltf) => {
         clearBuilding();
+        // Override materials to neutral grey
+        gltf.scene.traverse((child) => {
+          if (child.isMesh) {
+            child.material = new THREE.MeshStandardMaterial({
+              color: 0xd0d0d0,
+              opacity: 0.85,
+              transparent: true,
+              side: THREE.DoubleSide,
+              roughness: 0.9,
+              metalness: 0.0,
+            });
+          }
+        });
         buildingGroup.add(gltf.scene);
         applyAlignmentTransform(gltf.scene);
         logBuildingInfo(gltf.scene);
@@ -257,14 +269,15 @@ async function loadIFC(data) {
       bufferGeom.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
       bufferGeom.setIndex(new THREE.BufferAttribute(new Uint32Array(indices), 1));
 
-      const color = placedGeom.color;
+      // Neutral grey — no IFC colors, clean architectural context
+      const opacity = placedGeom.color.w;
       const material = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(color.x, color.y, color.z),
-        opacity: color.w,
-        transparent: color.w < 1,
+        color: 0xd0d0d0,
+        opacity: opacity < 1 ? opacity : 0.85,
+        transparent: true,
         side: THREE.DoubleSide,
-        roughness: 0.8,
-        metalness: 0.1,
+        roughness: 0.9,
+        metalness: 0.0,
       });
 
       const mesh = new THREE.Mesh(bufferGeom, material);
