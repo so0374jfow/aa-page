@@ -7,9 +7,14 @@ const mouse = new THREE.Vector2();
 let panelEl = null;
 let currentSlotId = null;
 let onPanelOpen = null;
+let onPanelBack = null;
 
 export function setOnPanelOpen(callback) {
   onPanelOpen = callback;
+}
+
+export function setOnPanelBack(callback) {
+  onPanelBack = callback;
 }
 
 export function initPanel(camera, canvasEl) {
@@ -60,7 +65,8 @@ export function openPanel(slotId) {
   currentSlotId = slotId;
   const { slot, element } = entry;
 
-  let html = `<button class="panel-close" onclick="document.getElementById('detail-panel').classList.remove('open')">&times;</button>`;
+  let html = `<button class="panel-back" id="panel-back-btn">&larr; Back to list</button>`;
+  html += `<button class="panel-close" onclick="document.getElementById('detail-panel').classList.remove('open')">&times;</button>`;
 
   if (!element) {
     html += renderEmptySlot(slot);
@@ -71,6 +77,12 @@ export function openPanel(slotId) {
   panelEl.innerHTML = html;
   if (onPanelOpen) onPanelOpen();
   panelEl.classList.add('open');
+
+  // Bind back button
+  const backBtn = panelEl.querySelector('#panel-back-btn');
+  if (backBtn && onPanelBack) {
+    backBtn.addEventListener('click', onPanelBack);
+  }
 
   // Bind architect notes save
   const textarea = panelEl.querySelector('.architect-notes-input');

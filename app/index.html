@@ -189,7 +189,7 @@
     <p class="info-hint"><kbd>L</kbd> list &middot; <kbd>I</kbd> info &middot; <kbd>T</kbd> colors &middot; <kbd>B</kbd> building &middot; <kbd>C</kbd> rules &middot; <kbd>F</kbd> fit &middot; <kbd>R</kbd> refresh &middot; <kbd>Esc</kbd> close</p>
   </div>
 
-  <!-- Toolbar -->
+  <!-- Toolbar (desktop) -->
   <div id="toolbar">
     <button id="btn-list" title="Element list (L)"><span class="btn-icon">L</span><span class="btn-label">List</span></button>
     <button id="btn-info" title="Project info (I)"><span class="btn-icon">i</span><span class="btn-label">Info</span></button>
@@ -199,6 +199,19 @@
     <button id="btn-axes" title="Toggle axes (A)"><span class="btn-icon">A</span><span class="btn-label">Axes</span></button>
     <button id="btn-fit" title="Fit camera (F)"><span class="btn-icon">F</span><span class="btn-label">Fit</span></button>
     <button id="btn-refresh" title="Refresh data (R)"><span class="btn-icon">R</span><span class="btn-label">Refresh</span></button>
+  </div>
+
+  <!-- Mobile floating menu -->
+  <button id="mobile-fab" aria-label="Menu">&#9776;</button>
+  <div id="mobile-menu">
+    <button data-action="list">Element List</button>
+    <button data-action="info">Project Info</button>
+    <button data-action="color">Color Overlay</button>
+    <button data-action="building">Building</button>
+    <button data-action="composition">Composition Rules</button>
+    <button data-action="axes">Axes</button>
+    <button data-action="fit">Fit View</button>
+    <button data-action="refresh">Refresh Data</button>
   </div>
 
   <!-- IFC drop zone overlay (appears on drag) -->

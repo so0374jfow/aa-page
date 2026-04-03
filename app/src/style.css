@@ -942,50 +942,114 @@ html, body {
   border-color: #999;
 }
 
+/* ── Mobile FAB + Menu (hidden on desktop) ── */
+#mobile-fab {
+  display: none;
+}
+
+#mobile-menu {
+  display: none;
+}
+
+/* ── Detail Panel Back Button (hidden on desktop) ── */
+#detail-panel .panel-back {
+  display: none;
+}
+
 /* ── Mobile Responsive ── */
 @media (max-width: 768px) {
 
-  /* -- Toolbar: icon-only, larger touch targets -- */
+  /* -- Hide desktop toolbar on mobile -- */
   #toolbar {
-    bottom: 10px;
-    gap: 4px;
-    padding: 0 8px;
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  #toolbar button {
-    height: 44px;
-    width: 44px;
-    padding: 0;
-    justify-content: center;
-    border-radius: 8px;
-  }
-
-  #toolbar button .btn-label {
     display: none;
   }
 
-  #toolbar button .btn-icon {
-    font-size: 16px;
-    width: auto;
-    opacity: 0.7;
+  /* -- Floating Action Button -- */
+  #mobile-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.92);
+    color: #333;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 180;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    backdrop-filter: blur(4px);
+    transition: transform 0.2s, background 0.2s;
   }
 
-  #toolbar button.active .btn-icon {
+  #mobile-fab.menu-open {
+    transform: rotate(90deg);
+    background: #333;
+    color: #fff;
+    border-color: #333;
+  }
+
+  /* -- Mobile Action Menu -- */
+  #mobile-menu {
+    position: fixed;
+    bottom: 76px;
+    right: 16px;
+    z-index: 175;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  #mobile-menu.open {
+    display: flex;
     opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
   }
 
-  /* -- List Panel: bottom sheet -- */
+  #mobile-menu button {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: right;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    transition: background 0.15s;
+  }
+
+  #mobile-menu button:active {
+    background: #eee;
+  }
+
+  #mobile-menu button.active {
+    background: #333;
+    color: #fff;
+    border-color: #333;
+  }
+
+  /* -- List Panel: bottom half-sheet -- */
   #list-panel {
     top: auto;
     bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
-    height: auto;
-    max-height: 85vh;
+    height: 50vh;
+    max-height: 50vh;
     transform: translateY(100%);
     border-right: none;
     border-top: 1px solid #ddd;
@@ -999,7 +1063,7 @@ html, body {
 
   #list-panel .list-header {
     border-radius: 16px 16px 0 0;
-    padding: 16px 16px 8px;
+    padding: 12px 16px 8px;
   }
 
   /* Drag handle indicator */
@@ -1010,7 +1074,7 @@ html, body {
     height: 4px;
     background: #ccc;
     border-radius: 2px;
-    margin: 0 auto 12px;
+    margin: 0 auto 8px;
   }
 
   #list-panel .list-close {
@@ -1027,20 +1091,20 @@ html, body {
     max-width: 100%;
   }
 
-  /* -- Detail Panel: bottom sheet -- */
+  /* -- Detail Panel: bottom half-sheet (replaces list) -- */
   #detail-panel {
     top: auto;
     bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
-    height: auto;
-    max-height: 85vh;
+    height: 50vh;
+    max-height: 50vh;
     transform: translateY(100%);
     border-left: none;
     border-top: 1px solid #ddd;
     border-radius: 16px 16px 0 0;
-    padding: 20px 20px 80px;
+    padding: 16px 20px 20px;
   }
 
   #detail-panel.open {
@@ -1055,7 +1119,26 @@ html, body {
     height: 4px;
     background: #ccc;
     border-radius: 2px;
-    margin: 0 auto 12px;
+    margin: 0 auto 8px;
+  }
+
+  /* Back button (returns to list) */
+  #detail-panel .panel-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: #555;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-bottom: 8px;
+  }
+
+  #detail-panel .panel-back:active {
+    color: #111;
   }
 
   #detail-panel .panel-close {
@@ -1070,7 +1153,7 @@ html, body {
   #hud {
     top: 10px;
     left: 12px;
-    max-width: 240px;
+    max-width: 200px;
     font-size: 11px;
     pointer-events: auto;
     cursor: pointer;

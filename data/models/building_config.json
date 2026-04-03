@@ -1,5 +1,5 @@
 {
-  "_comment": "Alignment config for W45 building (Vectorworks IFC4). South facade balconies face camera.",
+  "_comment": "Alignment config for W45 building (Vectorworks IFC4). North facade balconies face camera (side without staircase).",
 
   "balcony_levels": [
     {
@@ -24,16 +24,16 @@
 
   "railing_length_mm": 20000,
 
-  "south_facade": {
-    "_comment": "South facade with balconies faces camera after 180° rotation.",
+  "north_facade": {
+    "_comment": "North facade with balconies (no staircase) faces camera at 0° rotation.",
     "ifc_z_mm": 0
   },
 
   "building_transform": {
-    "_comment": "Rotated 180° so south facade (balconies) faces camera. Front face (bbox.max.z) placed at Z=0.",
+    "_comment": "No rotation — north facade (balconies, no staircase) faces camera. Front face (bbox.max.z) placed at Z=0.",
     "offset_x_mm": 0,
     "offset_y_mm": 0,
     "offset_z_mm": 0,
-    "rotation_y_deg": 180
+    "rotation_y_deg": 0
   }
 }

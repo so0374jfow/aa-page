@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createScene, fitCameraToWall, flyToObject, updateFlyTo } from './scene.js';
 import { buildWall, slotMeshes, updatePulses, toggleColorOverlay, isColorOverlayVisible } from './wall.js';
 import { loadLocalData, initDataPolling, setInitialData, forceRefresh } from './data.js';
-import { initPanel, closePanel, isPanelOpen, setOnPanelOpen } from './panel.js';
+import { initPanel, closePanel, isPanelOpen, setOnPanelOpen, setOnPanelBack } from './panel.js';
 import { initHUD, updateHUD, setViolationCount } from './hud.js';
 import { toggleCompositionOverlay, recalculateViolations } from './composition.js';
 import { initBuilding, toggleBuilding, isBuildingVisible } from './building.js';
@@ -48,16 +48,6 @@ async function init() {
 
   // Init subsystems
   initPanel(camera, canvas);
-  setOnPanelOpen(() => {
-    if (isMobile()) {
-      closeListPanel();
-      btnList?.classList.remove('active');
-      if (infoOverlay?.classList.contains('visible')) {
-        infoOverlay.classList.remove('visible');
-        btnInfo?.classList.remove('active');
-      }
-    }
-  });
   initListPanel(camera, controls);
   initHUD();
   updateHUD(data.elements);
@@ -118,11 +108,20 @@ async function init() {
   const btnRefresh = document.getElementById('btn-refresh');
   const infoOverlay = document.getElementById('info-overlay');
   const infoClose = document.getElementById('info-close');
+  const mobileFab = document.getElementById('mobile-fab');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  // Track whether the detail panel was opened from the list (for back button)
+  let openedFromList = false;
 
   // ── Action functions ──
+  function closeMobileMenu() {
+    mobileFab?.classList.remove('menu-open');
+    mobileMenu?.classList.remove('open');
+  }
+
   function doToggleList() {
     if (isMobile() && !isListOpen()) {
-      // Close other panels first on mobile
       closePanel();
       if (infoOverlay.classList.contains('visible')) {
         infoOverlay.classList.remove('visible');
@@ -131,28 +130,31 @@ async function init() {
     }
     const on = toggleListPanel();
     btnList?.classList.toggle('active', on);
+    updateMobileMenuStates();
   }
 
   function doToggleInfo() {
     const willOpen = !infoOverlay.classList.contains('visible');
     if (isMobile() && willOpen) {
-      // Close other panels first on mobile
       closePanel();
       closeListPanel();
       btnList?.classList.remove('active');
     }
     infoOverlay.classList.toggle('visible');
     btnInfo?.classList.toggle('active', infoOverlay.classList.contains('visible'));
+    updateMobileMenuStates();
   }
 
   function doToggleColor() {
     const on = toggleColorOverlay();
     btnColor?.classList.toggle('active', on);
+    updateMobileMenuStates();
   }
 
   function doToggleBuilding() {
     const on = toggleBuilding();
     btnBuilding?.classList.toggle('active', on);
+    updateMobileMenuStates();
   }
 
   function doToggleComposition() {
@@ -160,11 +162,13 @@ async function init() {
     setViolationCount(v);
     updateHUD(latestElementsData);
     btnComposition?.classList.toggle('active', v > 0 || btnComposition?.classList.contains('active'));
+    updateMobileMenuStates();
   }
 
   function doToggleAxes() {
     axesHelper.visible = !axesHelper.visible;
     btnAxes?.classList.toggle('active', axesHelper.visible);
+    updateMobileMenuStates();
   }
 
   function doFit() {
@@ -175,7 +179,35 @@ async function init() {
     forceRefresh();
   }
 
-  // ── Toolbar click handlers ──
+  // Go back from detail panel to list on mobile
+  function doBackToList() {
+    closePanel();
+    if (openedFromList) {
+      toggleListPanel(); // re-open the list
+      btnList?.classList.add('active');
+    }
+    openedFromList = false;
+  }
+
+  // Update active states on mobile menu buttons
+  function updateMobileMenuStates() {
+    if (!mobileMenu) return;
+    const states = {
+      list: isListOpen(),
+      info: infoOverlay.classList.contains('visible'),
+      color: isColorOverlayVisible(),
+      building: isBuildingVisible(),
+      axes: axesHelper.visible,
+    };
+    mobileMenu.querySelectorAll('button[data-action]').forEach(btn => {
+      const action = btn.dataset.action;
+      if (states[action] !== undefined) {
+        btn.classList.toggle('active', states[action]);
+      }
+    });
+  }
+
+  // ── Desktop toolbar click handlers ──
   btnList?.addEventListener('click', doToggleList);
   btnInfo?.addEventListener('click', doToggleInfo);
   btnColor?.addEventListener('click', doToggleColor);
@@ -185,6 +217,52 @@ async function init() {
   btnFit?.addEventListener('click', doFit);
   btnRefresh?.addEventListener('click', doRefresh);
   infoClose?.addEventListener('click', doToggleInfo);
+
+  // ── Mobile FAB + menu ──
+  const mobileActions = {
+    list: doToggleList,
+    info: doToggleInfo,
+    color: doToggleColor,
+    building: doToggleBuilding,
+    composition: doToggleComposition,
+    axes: doToggleAxes,
+    fit: doFit,
+    refresh: doRefresh,
+  };
+
+  mobileFab?.addEventListener('click', () => {
+    const isOpen = mobileMenu?.classList.contains('open');
+    if (isOpen) {
+      closeMobileMenu();
+    } else {
+      mobileFab.classList.add('menu-open');
+      mobileMenu?.classList.add('open');
+      updateMobileMenuStates();
+    }
+  });
+
+  mobileMenu?.querySelectorAll('button[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const fn = mobileActions[btn.dataset.action];
+      if (fn) fn();
+      closeMobileMenu();
+    });
+  });
+
+  // Wire up detail panel opening from list — track so back button works
+  setOnPanelOpen(() => {
+    if (isMobile()) {
+      openedFromList = isListOpen();
+      closeListPanel();
+      btnList?.classList.remove('active');
+      if (infoOverlay?.classList.contains('visible')) {
+        infoOverlay.classList.remove('visible');
+        btnInfo?.classList.remove('active');
+      }
+      closeMobileMenu();
+    }
+  });
+  setOnPanelBack(doBackToList);
 
   // Show info overlay on first visit
   if (!localStorage.getItem('spolia_visited')) {
@@ -198,7 +276,7 @@ async function init() {
     doToggleList();
   }
 
-  // ── Keyboard shortcuts ──
+  // ── Keyboard shortcuts (desktop) ──
   window.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
 
@@ -230,9 +308,12 @@ async function init() {
       case 'escape':
         if (infoOverlay.classList.contains('visible')) {
           doToggleInfo();
+        } else if (isPanelOpen() && isMobile()) {
+          doBackToList();
         } else {
           closePanel();
         }
+        closeMobileMenu();
         break;
     }
   });
