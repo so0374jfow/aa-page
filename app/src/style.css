@@ -28,7 +28,18 @@ html, body {
   pointer-events: none;
   font-size: 12px;
   line-height: 1.6;
-  max-width: 320px;
+  max-width: 280px;
+  transition: left 0.3s ease;
+}
+
+/* Push HUD right when list panel is open */
+#list-panel.open ~ #hud {
+  left: 336px;
+}
+
+/* Shrink detail panel when list panel is open */
+#list-panel.open ~ #detail-panel.open {
+  max-width: calc(100% - 320px);
 }
 
 #hud .hud-section {

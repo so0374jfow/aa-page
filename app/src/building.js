@@ -124,14 +124,15 @@ function applyAlignmentTransform(model) {
 
   // Alignment strategy:
   // X: center the building on the wall (X=10)
-  // Y: align building ground level (bbox.min.y) with Y=0 (first storey)
-  //    IFC basement is at -2500mm, so min.y may be negative — that's fine
+  // Y: DON'T move vertically — IFC elevations already match wall levels
+  //    (both use the same config: Erdgeschoss=0, 1.OG=2650, 2.OG=5370)
+  //    Only apply manual offset_y_mm for fine-tuning.
   // Z: place the building's front face (max Z = closest to camera) at Z=0
-  //    so the balcony edges meet the wall face. Then push slightly behind.
-  const gap = (t.offset_z_mm || 0) * MM; // gap between building front and wall face
+  //    so the balcony edges meet the wall face.
+  const gap = (t.offset_z_mm || 0) * MM;
 
   const offsetX = wallCenterX - modelCenter.x + (t.offset_x_mm || 0) * MM;
-  const offsetY = -bbox.min.y + (t.offset_y_mm || 0) * MM;
+  const offsetY = (t.offset_y_mm || 0) * MM;
   const offsetZ = -bbox.max.z - gap;
 
   buildingGroup.position.set(offsetX, offsetY, offsetZ);
