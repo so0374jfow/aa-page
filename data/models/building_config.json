@@ -1,0 +1,39 @@
+{
+  "_comment": "Alignment config for W45 building (Vectorworks IFC4). Balcony slab elevations from IFC storeys.",
+
+  "balcony_levels": [
+    {
+      "name": "level-1",
+      "label": "Erdgeschoss (Ground)",
+      "ifc_railing_y_mm": 0,
+      "railing_height_mm": 1000
+    },
+    {
+      "name": "level-2",
+      "label": "1. Obergeschoss",
+      "ifc_railing_y_mm": 2650,
+      "railing_height_mm": 1000
+    },
+    {
+      "name": "level-3",
+      "label": "2. Obergeschoss",
+      "ifc_railing_y_mm": 5370,
+      "railing_height_mm": 1000
+    }
+  ],
+
+  "railing_length_mm": 20000,
+
+  "north_facade": {
+    "_comment": "Z position of the north facade in IFC coordinates. Adjust after inspecting the model.",
+    "ifc_z_mm": 0
+  },
+
+  "building_transform": {
+    "_comment": "Additional transform for fine-tuning. offset_z places building behind wall face.",
+    "offset_x_mm": 0,
+    "offset_y_mm": 0,
+    "offset_z_mm": 500,
+    "rotation_y_deg": 0
+  }
+}

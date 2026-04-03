@@ -31,13 +31,13 @@
       "created_at": "2026-04-02T12:03:13.438092+00:00",
       "updated_at": "2026-04-02T12:54:08.157582+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "INSTALLED",
       "mesh_url": "data/meshes/EL-0001.glb",
       "dimensions_actual": null,
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-001"
+      "slot_id": "SLOT-L1-1583"
     },
     {
       "demo": true,
@@ -64,13 +64,13 @@
       "created_at": "2026-04-02T12:03:48.474453+00:00",
       "updated_at": "2026-04-02T12:54:08.157582+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "INSTALLED",
       "mesh_url": "data/meshes/EL-0002.glb",
       "dimensions_actual": null,
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-043"
+      "slot_id": "SLOT-L2-1361"
     },
     {
       "demo": true,
@@ -89,7 +89,7 @@
       "agreed_price_chf": 120,
       "shipping_cost_chf": 12.0,
       "total_chf": 132.0,
-      "provenance_seller_text": "Fragment de corbeau en calcaire, église désaffectée près de Beaune, XIVe siècle",
+      "provenance_seller_text": "Fragment de corbeau en calcaire, \u00e9glise d\u00e9saffect\u00e9e pr\u00e8s de Beaune, XIVe si\u00e8cle",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -103,7 +103,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-037"
+      "slot_id": "SLOT-L3-2402"
     },
     {
       "demo": true,
@@ -136,7 +136,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-050"
+      "slot_id": "SLOT-L1-2503"
     },
     {
       "demo": true,
@@ -155,21 +155,21 @@
       "agreed_price_chf": 30.0,
       "shipping_cost_chf": 15.0,
       "total_chf": 45.0,
-      "provenance_seller_text": "Kupfer-Regenrinne vom Bauernhof im Emmental, schöne Patina, ca. 1950",
+      "provenance_seller_text": "Kupfer-Regenrinne vom Bauernhof im Emmental, sch\u00f6ne Patina, ca. 1950",
       "fire_classification": "RF1",
       "images_original": [],
-      "negotiation_log": "Antoine: 12 CHF möglich?\nSeller: Ja, kein Problem.",
+      "negotiation_log": "Antoine: 12 CHF m\u00f6glich?\nSeller: Ja, kein Problem.",
       "id": "EL-0005",
       "created_at": "2026-04-02T12:03:48.655186+00:00",
       "updated_at": "2026-04-02T12:04:06.252355+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "PENDING_REVIEW",
       "mesh_url": null,
       "dimensions_actual": null,
-      "architect_review_flag": false,
+      "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-100"
+      "slot_id": "SLOT-L2-430"
     },
     {
       "demo": true,
@@ -196,10 +196,10 @@
       "created_at": "2026-04-02T12:03:48.713657+00:00",
       "updated_at": "2026-04-02T12:03:58.725276+00:00",
       "images_local": [],
-      "status": "ASSESSED",
+      "status": "PENDING_REVIEW",
       "mesh_url": null,
       "dimensions_actual": null,
-      "architect_review_flag": false,
+      "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": ""
     },
@@ -220,7 +220,7 @@
       "agreed_price_chf": 22,
       "shipping_cost_chf": 12.0,
       "total_chf": 34.0,
-      "provenance_seller_text": "Verre trempé récupéré dune verrière dusine textile, Roubaix, années 1960",
+      "provenance_seller_text": "Verre tremp\u00e9 r\u00e9cup\u00e9r\u00e9 dune verri\u00e8re dusine textile, Roubaix, ann\u00e9es 1960",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -228,13 +228,13 @@
       "created_at": "2026-04-02T12:03:48.771903+00:00",
       "updated_at": "2026-04-02T12:54:08.157582+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "RECEIVED",
       "mesh_url": "data/meshes/EL-0007.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-456"
+      "slot_id": "SLOT-L3-1449"
     },
     {
       "demo": true,
@@ -253,7 +253,7 @@
       "agreed_price_chf": null,
       "shipping_cost_chf": null,
       "total_chf": null,
-      "provenance_seller_text": "Handgestrichener Ziegel mit Brennstempel, Abbruch Industriegebäude Dresden",
+      "provenance_seller_text": "Handgestrichener Ziegel mit Brennstempel, Abbruch Industriegeb\u00e4ude Dresden",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -293,10 +293,10 @@
       "created_at": "2026-04-02T12:03:48.887728+00:00",
       "updated_at": "2026-04-02T12:03:48.887728+00:00",
       "images_local": [],
-      "status": "SCOUTED",
+      "status": "PENDING_REVIEW",
       "mesh_url": null,
       "dimensions_actual": null,
-      "architect_review_flag": false,
+      "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": ""
     },
@@ -317,7 +317,7 @@
       "agreed_price_chf": null,
       "shipping_cost_chf": null,
       "total_chf": null,
-      "provenance_seller_text": "Handgewebtes Jute-Wandpaneel aus Berghütte oberhalb Grindelwald, traditionelles Muster",
+      "provenance_seller_text": "Handgewebtes Jute-Wandpaneel aus Bergh\u00fctte oberhalb Grindelwald, traditionelles Muster",
       "fire_classification": "RF2",
       "images_original": [],
       "negotiation_log": "",
@@ -325,7 +325,7 @@
       "created_at": "2026-04-02T12:03:48.945189+00:00",
       "updated_at": "2026-04-02T12:03:48.945189+00:00",
       "images_local": [],
-      "status": "SCOUTED",
+      "status": "ASSESSED",
       "mesh_url": null,
       "dimensions_actual": null,
       "architect_review_flag": false,
@@ -349,7 +349,7 @@
       "agreed_price_chf": 18,
       "shipping_cost_chf": 12.0,
       "total_chf": 30.0,
-      "provenance_seller_text": "Stahlrohr mit Flanschen, Industrieabbruch Zürich-West, ca. 1960",
+      "provenance_seller_text": "Stahlrohr mit Flanschen, Industrieabbruch Z\u00fcrich-West, ca. 1960",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -357,13 +357,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "PURCHASED",
       "mesh_url": "data/meshes/EL-0011.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-099"
+      "slot_id": "SLOT-L1-2343"
     },
     {
       "demo": true,
@@ -382,7 +382,7 @@
       "agreed_price_chf": 42,
       "shipping_cost_chf": 12.0,
       "total_chf": 54.0,
-      "provenance_seller_text": "Schraubstock aus aufgelöster Schlosserei, Liège, ca. 1940",
+      "provenance_seller_text": "Schraubstock aus aufgel\u00f6ster Schlosserei, Li\u00e8ge, ca. 1940",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -390,13 +390,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "SHIPPED",
       "mesh_url": "data/meshes/EL-0012.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-084"
+      "slot_id": "SLOT-L2-238"
     },
     {
       "demo": true,
@@ -423,13 +423,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "NEGOTIATING",
       "mesh_url": "data/meshes/EL-0013.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-044"
+      "slot_id": "SLOT-L3-1412"
     },
     {
       "demo": true,
@@ -448,7 +448,7 @@
       "agreed_price_chf": 3,
       "shipping_cost_chf": 12.0,
       "total_chf": 15.0,
-      "provenance_seller_text": "Rostige Farbdose aus Druckerei München-Schwabing",
+      "provenance_seller_text": "Rostige Farbdose aus Druckerei M\u00fcnchen-Schwabing",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -456,13 +456,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "PENDING_REVIEW",
       "mesh_url": "data/meshes/EL-0014.glb",
       "dimensions_actual": null,
-      "architect_review_flag": false,
+      "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-225"
+      "slot_id": "SLOT-L1-1762"
     },
     {
       "demo": true,
@@ -481,7 +481,7 @@
       "agreed_price_chf": 35,
       "shipping_cost_chf": 12.0,
       "total_chf": 47.0,
-      "provenance_seller_text": "Messing-Lötlampe eines Installateurs, Wien-Ottakring, ca. 1955",
+      "provenance_seller_text": "Messing-L\u00f6tlampe eines Installateurs, Wien-Ottakring, ca. 1955",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -489,13 +489,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "APPROVED",
       "mesh_url": "data/meshes/EL-0015.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-029"
+      "slot_id": "SLOT-L2-2073"
     },
     {
       "demo": true,
@@ -528,7 +528,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-019"
+      "slot_id": "SLOT-L3-840"
     },
     {
       "demo": true,
@@ -547,7 +547,7 @@
       "agreed_price_chf": 15,
       "shipping_cost_chf": 12.0,
       "total_chf": 27.0,
-      "provenance_seller_text": "Holzhammer eines Steinmetzes, Münsterbauhütte Freiburg",
+      "provenance_seller_text": "Holzhammer eines Steinmetzes, M\u00fcnsterbauh\u00fctte Freiburg",
       "fire_classification": "RF2",
       "images_original": [],
       "negotiation_log": "",
@@ -555,13 +555,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "PENDING_REVIEW",
       "mesh_url": "data/meshes/EL-0017.glb",
       "dimensions_actual": null,
-      "architect_review_flag": false,
+      "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-100"
+      "slot_id": "SLOT-L1-2285"
     },
     {
       "demo": true,
@@ -580,7 +580,7 @@
       "agreed_price_chf": 28,
       "shipping_cost_chf": 12.0,
       "total_chf": 40.0,
-      "provenance_seller_text": "Antieke vaas met craquelé glazuur, Delfts aardewerk, 2e keus",
+      "provenance_seller_text": "Antieke vaas met craquel\u00e9 glazuur, Delfts aardewerk, 2e keus",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -588,13 +588,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "PURCHASED",
       "mesh_url": "data/meshes/EL-0018.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-041"
+      "slot_id": "SLOT-L2-1000"
     },
     {
       "demo": true,
@@ -613,7 +613,7 @@
       "agreed_price_chf": 25,
       "shipping_cost_chf": 12.0,
       "total_chf": 37.0,
-      "provenance_seller_text": "Geschmiedeter Beilkopf, Köhler im Schwarzwald, 19. Jh.",
+      "provenance_seller_text": "Geschmiedeter Beilkopf, K\u00f6hler im Schwarzwald, 19. Jh.",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -627,7 +627,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-074"
+      "slot_id": "SLOT-L3-1214"
     },
     {
       "demo": true,
@@ -654,13 +654,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "NEGOTIATING",
       "mesh_url": "data/meshes/EL-0020.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-181"
+      "slot_id": "SLOT-L1-623"
     },
     {
       "demo": true,
@@ -687,13 +687,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "PENDING_REVIEW",
       "mesh_url": "data/meshes/EL-0021.glb",
       "dimensions_actual": null,
-      "architect_review_flag": false,
+      "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-045"
+      "slot_id": "SLOT-L2-1380"
     },
     {
       "demo": true,
@@ -720,13 +720,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "RECEIVED",
       "mesh_url": "data/meshes/EL-0022.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-026"
+      "slot_id": "SLOT-L3-1633"
     },
     {
       "demo": true,
@@ -745,7 +745,7 @@
       "agreed_price_chf": 32,
       "shipping_cost_chf": 12.0,
       "total_chf": 44.0,
-      "provenance_seller_text": "Messing-Öllampe ohne Glaszylinder, Alphütte Graubünden",
+      "provenance_seller_text": "Messing-\u00d6llampe ohne Glaszylinder, Alph\u00fctte Graub\u00fcnden",
       "fire_classification": "RF2",
       "images_original": [],
       "negotiation_log": "",
@@ -753,13 +753,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "SHIPPED",
       "mesh_url": "data/meshes/EL-0023.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-148"
+      "slot_id": "SLOT-L1-1763"
     },
     {
       "demo": true,
@@ -792,7 +792,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-077"
+      "slot_id": "SLOT-L2-1736"
     },
     {
       "demo": true,
@@ -811,7 +811,7 @@
       "agreed_price_chf": 45,
       "shipping_cost_chf": 12.0,
       "total_chf": 57.0,
-      "provenance_seller_text": "Lampe industrielle en tuyaux, récup loft Bruxelles-Ixelles",
+      "provenance_seller_text": "Lampe industrielle en tuyaux, r\u00e9cup loft Bruxelles-Ixelles",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -819,13 +819,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "PENDING_REVIEW",
       "mesh_url": "data/meshes/EL-0025.glb",
       "dimensions_actual": null,
-      "architect_review_flag": false,
+      "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-033"
+      "slot_id": "SLOT-L3-204"
     },
     {
       "demo": true,
@@ -844,7 +844,7 @@
       "agreed_price_chf": 15,
       "shipping_cost_chf": 12.0,
       "total_chf": 27.0,
-      "provenance_seller_text": "Armeebestand-Kanister, Lack blättert, Zeughaus Thun",
+      "provenance_seller_text": "Armeebestand-Kanister, Lack bl\u00e4ttert, Zeughaus Thun",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -852,13 +852,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "APPROVED",
       "mesh_url": "data/meshes/EL-0026.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-121"
+      "slot_id": "SLOT-L1-882"
     },
     {
       "demo": true,
@@ -877,7 +877,7 @@
       "agreed_price_chf": 8,
       "shipping_cost_chf": 12.0,
       "total_chf": 20.0,
-      "provenance_seller_text": "Messing-Ölkännchen, Feinmechanik-Werkstatt Nürnberg, ca. 1960",
+      "provenance_seller_text": "Messing-\u00d6lk\u00e4nnchen, Feinmechanik-Werkstatt N\u00fcrnberg, ca. 1960",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -891,7 +891,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-008"
+      "slot_id": "SLOT-L2-849"
     },
     {
       "demo": true,
@@ -910,7 +910,7 @@
       "agreed_price_chf": 0,
       "shipping_cost_chf": 12.0,
       "total_chf": 12.0,
-      "provenance_seller_text": "Galet de granit poli, extrait lors de travaux de berge, Bâle",
+      "provenance_seller_text": "Galet de granit poli, extrait lors de travaux de berge, B\u00e2le",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -918,13 +918,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "PENDING_REVIEW",
       "mesh_url": "data/meshes/EL-0028.glb",
       "dimensions_actual": null,
-      "architect_review_flag": false,
+      "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-175"
+      "slot_id": "SLOT-L3-2322"
     },
     {
       "demo": true,
@@ -943,7 +943,7 @@
       "agreed_price_chf": 18,
       "shipping_cost_chf": 12.0,
       "total_chf": 30.0,
-      "provenance_seller_text": "Pot en grès salé, tradition potière alsacienne, Betschdorf",
+      "provenance_seller_text": "Pot en gr\u00e8s sal\u00e9, tradition poti\u00e8re alsacienne, Betschdorf",
       "fire_classification": "RF1",
       "images_original": [],
       "negotiation_log": "",
@@ -951,13 +951,13 @@
       "created_at": "2026-04-02T16:27:54.608458+00:00",
       "updated_at": "2026-04-02T16:27:54.608458+00:00",
       "images_local": [],
-      "status": "ALLOCATED",
+      "status": "PURCHASED",
       "mesh_url": "data/meshes/EL-0029.glb",
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-127"
+      "slot_id": "SLOT-L1-856"
     },
     {
       "demo": true,
@@ -990,7 +990,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-097"
+      "slot_id": "SLOT-L2-2437"
     }
   ]
 }
