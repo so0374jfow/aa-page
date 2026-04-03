@@ -111,31 +111,41 @@ function applyAlignmentTransform(model) {
   const modelSize = new THREE.Vector3();
   bbox.getSize(modelSize);
 
-  // The wall spans X: 0 to 20 units (0–20,000mm), centered at X=10
-  const wallCenterX = 10;
-  // Wall Y center: average of balcony levels
-  const levels = buildingConfig?.balcony_levels;
-  let wallCenterY = 3;
-  if (levels?.length) {
-    const avgY = levels.reduce((s, l) => s + l.ifc_railing_y_mm, 0) / levels.length;
-    wallCenterY = avgY * MM + 0.5; // offset up slightly to center on railings
-  }
+  console.log('Building bbox:', {
+    min: `(${(bbox.min.x/MM).toFixed(0)}, ${(bbox.min.y/MM).toFixed(0)}, ${(bbox.min.z/MM).toFixed(0)})mm`,
+    max: `(${(bbox.max.x/MM).toFixed(0)}, ${(bbox.max.y/MM).toFixed(0)}, ${(bbox.max.z/MM).toFixed(0)})mm`,
+    size: `${(modelSize.x/MM).toFixed(0)} x ${(modelSize.y/MM).toFixed(0)} x ${(modelSize.z/MM).toFixed(0)}mm`,
+  });
 
   const t = buildingConfig?.building_transform || {};
 
-  // Offset to place building behind the wall (negative Z = away from camera)
-  // Wall face is at Z=0, camera looks from +Z. Building goes to -Z.
+  // The wall spans X: 0 to 20 units (0–20,000mm)
+  const wallCenterX = 10;
+
+  // Alignment strategy:
+  // X: center the building on the wall (X=10)
+  // Y: align building ground level (bbox.min.y) with Y=0 (first storey)
+  //    IFC basement is at -2500mm, so min.y may be negative — that's fine
+  // Z: place the building's front face (max Z = closest to camera) at Z=0
+  //    so the balcony edges meet the wall face. Then push slightly behind.
+  const gap = (t.offset_z_mm || 0) * MM; // gap between building front and wall face
+
   const offsetX = wallCenterX - modelCenter.x + (t.offset_x_mm || 0) * MM;
-  const offsetY = -modelCenter.y + (t.offset_y_mm || 0) * MM;
-  const offsetZ = -modelCenter.z - (t.offset_z_mm || 500) * MM;
+  const offsetY = -bbox.min.y + (t.offset_y_mm || 0) * MM;
+  const offsetZ = -bbox.max.z - gap;
 
   buildingGroup.position.set(offsetX, offsetY, offsetZ);
 
   if (t.rotation_y_deg) {
+    // Rotate around the building's center, not origin
+    buildingGroup.position.sub(modelCenter);
+    const euler = new THREE.Euler(0, (t.rotation_y_deg * Math.PI) / 180, 0);
+    buildingGroup.position.applyEuler(euler);
+    buildingGroup.position.add(modelCenter);
     buildingGroup.rotation.y = (t.rotation_y_deg * Math.PI) / 180;
   }
 
-  console.log(`Building aligned: model center (${(modelCenter.x/MM).toFixed(0)}, ${(modelCenter.y/MM).toFixed(0)}, ${(modelCenter.z/MM).toFixed(0)})mm → wall center`);
+  console.log(`Building aligned: front face at Z=0, ground at Y=0, centered at X=${wallCenterX}`);
 }
 
 // ── Auto-load ──

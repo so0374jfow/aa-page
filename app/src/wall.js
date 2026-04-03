@@ -52,9 +52,11 @@ export function buildWall(scene, slotsData, elementsData) {
 }
 
 function createSlotMesh(slot, element) {
-  const w = slot.dimensions.width * MM_TO_UNITS;
-  const h = slot.dimensions.height * MM_TO_UNITS;
-  const d = slot.dimensions.depth * MM_TO_UNITS;
+  // Use element's real dimensions when available, fall back to slot dimensions
+  const dim = element?.dimensions_actual || element?.dimensions_estimated || slot.dimensions;
+  const w = dim.width * MM_TO_UNITS;
+  const h = dim.height * MM_TO_UNITS;
+  const d = dim.depth * MM_TO_UNITS;
 
   const geometry = new THREE.BoxGeometry(w, h, d);
 
@@ -160,6 +162,11 @@ function loadMeshForSlot(entry, meshPath) {
       const scale = Math.min(scaleX, scaleY, scaleZ) * 0.95;
       model.scale.setScalar(scale);
 
+      // Compute the actual size of the scaled GLB
+      const actualW = modelSize.x * scale;
+      const actualH = modelSize.y * scale;
+      const actualD = modelSize.z * scale;
+
       // Position at slot center
       model.position.copy(entry.mesh.position);
       // Offset so model center aligns with slot center
@@ -174,8 +181,13 @@ function loadMeshForSlot(entry, meshPath) {
         }
       });
 
-      // Convert existing colored box to a transparent overlay (hidden by default)
+      // Replace the old box with one that fits the actual GLB size
       const box = entry.mesh;
+      const oldPos = box.position.clone();
+      box.geometry.dispose();
+      box.geometry = new THREE.BoxGeometry(actualW, actualH, actualD);
+      box.position.copy(oldPos);
+
       box.material.dispose();
       box.material = new THREE.MeshBasicMaterial({
         color: getElementColor(entry.element),
@@ -186,6 +198,12 @@ function loadMeshForSlot(entry, meshPath) {
       box.renderOrder = 1;
       box.visible = colorOverlayVisible;
       entry.colorBox = box;
+
+      // Update edges to match new size too
+      if (entry.edges) {
+        entry.edges.geometry.dispose();
+        entry.edges.geometry = new THREE.EdgesGeometry(box.geometry);
+      }
 
       // Add GLB model to group
       entry.group.add(model);

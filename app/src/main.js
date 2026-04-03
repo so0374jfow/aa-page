@@ -166,6 +166,9 @@ async function init() {
     localStorage.setItem('spolia_visited', '1');
   }
 
+  // Open list view by default
+  doToggleList();
+
   // ── Keyboard shortcuts ──
   window.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;

@@ -368,15 +368,16 @@ html, body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 380px;
+  width: 320px;
   height: 100%;
-  background: #fafafa;
+  background: rgba(250, 250, 250, 0.95);
   border-right: 1px solid #ddd;
-  z-index: 200;
+  z-index: 90;
   overflow-y: auto;
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   font-size: 12px;
+  backdrop-filter: blur(4px);
 }
 
 #list-panel.open {
@@ -384,11 +385,11 @@ html, body {
 }
 
 #list-panel .list-header {
-  padding: 16px 20px 12px;
+  padding: 12px 16px 8px;
   border-bottom: 1px solid #ddd;
   position: sticky;
   top: 0;
-  background: #fafafa;
+  background: rgba(250, 250, 250, 0.98);
   z-index: 1;
 }
 
@@ -418,7 +419,7 @@ html, body {
 }
 
 #list-panel .list-item {
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
   display: flex;
