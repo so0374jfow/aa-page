@@ -99,36 +99,42 @@ async function loadConfig() {
  * Computes and applies the transform that aligns the IFC building
  * with the Three.js wall coordinates.
  *
- * The wall levels in Three.js are at Y positions defined by slots.json.
- * The building_config.json tells us where the balconies are in IFC space.
- * We compute the offset so they match.
+ * The wall sits at X: 0–20 units, Y: per balcony_levels, Z: 0 (face).
+ * IFC models often use real-world survey coordinates (large offsets).
+ * We auto-center the building behind the wall using its bounding box.
  */
-function applyAlignmentTransform() {
-  if (!buildingConfig) {
-    // No config — just offset behind the wall
-    buildingGroup.position.set(0, 0, 0.5);
-    return;
+function applyAlignmentTransform(model) {
+  // Compute model bounding box BEFORE any group transform
+  const bbox = new THREE.Box3().setFromObject(model);
+  const modelCenter = new THREE.Vector3();
+  bbox.getCenter(modelCenter);
+  const modelSize = new THREE.Vector3();
+  bbox.getSize(modelSize);
+
+  // The wall spans X: 0 to 20 units (0–20,000mm), centered at X=10
+  const wallCenterX = 10;
+  // Wall Y center: average of balcony levels
+  const levels = buildingConfig?.balcony_levels;
+  let wallCenterY = 3;
+  if (levels?.length) {
+    const avgY = levels.reduce((s, l) => s + l.ifc_railing_y_mm, 0) / levels.length;
+    wallCenterY = avgY * MM + 0.5; // offset up slightly to center on railings
   }
 
-  const t = buildingConfig.building_transform || {};
-  const facade = buildingConfig.north_facade || {};
+  const t = buildingConfig?.building_transform || {};
 
-  // Compute offset: IFC railing Y=0 should map to Three.js Y=0
-  // (slots.json level-1 baseY is 0, so no Y offset needed by default)
-  // If the IFC has level-1 at a different Y, we'd offset.
-  // For now, we assume the config's ifc_railing_y_mm values ARE the Three.js Y positions
-  // (since generate_slots.mjs reads the same config).
+  // Offset to place building center at wall center
+  const offsetX = wallCenterX - modelCenter.x + (t.offset_x_mm || 0) * MM;
+  const offsetY = -modelCenter.y + (t.offset_y_mm || 0) * MM;
+  const offsetZ = -modelCenter.z + (t.offset_z_mm || 500) * MM;
 
-  const offsetX = (t.offset_x_mm || 0) * MM;
-  const offsetY = (t.offset_y_mm || 0) * MM;
-  const offsetZ = (t.offset_z_mm || 500) * MM;
-  const facadeZ = (facade.ifc_z_mm || 0) * MM;
-
-  buildingGroup.position.set(offsetX, offsetY, facadeZ + offsetZ);
+  buildingGroup.position.set(offsetX, offsetY, offsetZ);
 
   if (t.rotation_y_deg) {
     buildingGroup.rotation.y = (t.rotation_y_deg * Math.PI) / 180;
   }
+
+  console.log(`Building aligned: model center (${(modelCenter.x/MM).toFixed(0)}, ${(modelCenter.y/MM).toFixed(0)}, ${(modelCenter.z/MM).toFixed(0)})mm → wall center`);
 }
 
 // ── Auto-load ──
@@ -164,7 +170,7 @@ function loadGLB(url) {
       (gltf) => {
         clearBuilding();
         buildingGroup.add(gltf.scene);
-        applyAlignmentTransform();
+        applyAlignmentTransform(gltf.scene);
         logBuildingInfo(gltf.scene);
         resolve();
       },
@@ -262,7 +268,7 @@ async function loadIFC(data) {
 
   clearBuilding();
   buildingGroup.add(meshGroup);
-  applyAlignmentTransform();
+  applyAlignmentTransform(meshGroup);
   logBuildingInfo(meshGroup);
 }
 
