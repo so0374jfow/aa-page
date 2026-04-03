@@ -30,10 +30,10 @@
   },
 
   "building_transform": {
-    "_comment": "No rotation — north facade (balconies, no staircase) faces camera. Front face (bbox.max.z) placed at Z=0.",
+    "_comment": "No rotation — north facade (balconies, no staircase) faces camera. Front face pulled forward so balcony edge meets railings.",
     "offset_x_mm": 0,
     "offset_y_mm": 0,
-    "offset_z_mm": 0,
+    "offset_z_mm": 500,
     "rotation_y_deg": 0
   }
 }
