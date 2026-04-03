@@ -50,9 +50,17 @@ html, body {
   font-size: 14px;
   font-weight: bold;
   color: #111;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+#hud .hud-wip {
+  font-size: 9px;
+  color: #d83;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
 }
 
 #hud .hud-row {
@@ -570,8 +578,16 @@ html, body {
   font-size: 18px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 16px;
+  margin-bottom: 4px;
   color: #111;
+}
+
+#info-overlay .wip-badge {
+  font-size: 10px;
+  color: #d83;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
 }
 
 #info-overlay p {

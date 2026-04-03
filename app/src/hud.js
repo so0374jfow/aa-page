@@ -67,6 +67,7 @@ export function updateHUD(elementsData) {
   // Title
   html += `<div class="hud-section">`;
   html += `<div class="hud-title">Agentic Spolia</div>`;
+  html += `<div class="hud-wip">Demo &middot; Work in Progress</div>`;
   html += `</div>`;
 
   // Key stats
