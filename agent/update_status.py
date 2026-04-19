@@ -20,6 +20,8 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
+from _slots import regenerate_slots
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ELEMENTS_FILE = REPO_ROOT / "data" / "elements.json"
 
@@ -152,6 +154,10 @@ def main():
     update_metadata(db)
     save_db(db)
     print(f"{args.element_id}: {old_status} → {args.new_status}")
+
+    # Status changes flip elements in and out of the committed-slot pool
+    # (e.g. SCOUTED → ASSESSED brings them in; → REJECTED removes them).
+    regenerate_slots()
 
     if not args.no_commit:
         try:

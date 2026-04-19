@@ -37,7 +37,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-1583"
+      "slot_id": "SLOT-L1-EL0001"
     },
     {
       "demo": true,
@@ -70,7 +70,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-1361"
+      "slot_id": "SLOT-L2-EL0002"
     },
     {
       "demo": true,
@@ -103,7 +103,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L3-2402"
+      "slot_id": "SLOT-L3-EL0003"
     },
     {
       "demo": true,
@@ -136,7 +136,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-2503"
+      "slot_id": "SLOT-L1-EL0004"
     },
     {
       "demo": true,
@@ -169,7 +169,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-430"
+      "slot_id": "SLOT-L2-EL0005"
     },
     {
       "demo": true,
@@ -201,7 +201,8 @@
       "dimensions_actual": null,
       "architect_review_flag": true,
       "architect_notes": "",
-      "agent_notes": ""
+      "agent_notes": "",
+      "slot_id": "SLOT-L3-EL0006"
     },
     {
       "demo": true,
@@ -234,7 +235,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L3-1449"
+      "slot_id": "SLOT-L3-EL0007"
     },
     {
       "demo": true,
@@ -298,7 +299,8 @@
       "dimensions_actual": null,
       "architect_review_flag": true,
       "architect_notes": "",
-      "agent_notes": ""
+      "agent_notes": "",
+      "slot_id": "SLOT-L2-EL0009"
     },
     {
       "demo": true,
@@ -330,7 +332,8 @@
       "dimensions_actual": null,
       "architect_review_flag": false,
       "architect_notes": "",
-      "agent_notes": ""
+      "agent_notes": "",
+      "slot_id": "SLOT-L3-EL0010"
     },
     {
       "demo": true,
@@ -363,7 +366,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-2343"
+      "slot_id": "SLOT-L1-EL0011"
     },
     {
       "demo": true,
@@ -396,7 +399,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-238"
+      "slot_id": "SLOT-L2-EL0012"
     },
     {
       "demo": true,
@@ -429,7 +432,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L3-1412"
+      "slot_id": "SLOT-L3-EL0013"
     },
     {
       "demo": true,
@@ -462,7 +465,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-1762"
+      "slot_id": "SLOT-L1-EL0014"
     },
     {
       "demo": true,
@@ -495,7 +498,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-2073"
+      "slot_id": "SLOT-L2-EL0015"
     },
     {
       "demo": true,
@@ -528,7 +531,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L3-840"
+      "slot_id": "SLOT-L3-EL0016"
     },
     {
       "demo": true,
@@ -561,7 +564,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-2285"
+      "slot_id": "SLOT-L1-EL0017"
     },
     {
       "demo": true,
@@ -594,7 +597,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-1000"
+      "slot_id": "SLOT-L2-EL0018"
     },
     {
       "demo": true,
@@ -627,7 +630,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L3-1214"
+      "slot_id": "SLOT-L3-EL0019"
     },
     {
       "demo": true,
@@ -660,7 +663,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-623"
+      "slot_id": "SLOT-L1-EL0020"
     },
     {
       "demo": true,
@@ -693,7 +696,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-1380"
+      "slot_id": "SLOT-L2-EL0021"
     },
     {
       "demo": true,
@@ -726,7 +729,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L3-1633"
+      "slot_id": "SLOT-L3-EL0022"
     },
     {
       "demo": true,
@@ -759,7 +762,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-1763"
+      "slot_id": "SLOT-L1-EL0023"
     },
     {
       "demo": true,
@@ -792,7 +795,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-1736"
+      "slot_id": "SLOT-L2-EL0024"
     },
     {
       "demo": true,
@@ -825,7 +828,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L3-204"
+      "slot_id": "SLOT-L3-EL0025"
     },
     {
       "demo": true,
@@ -858,7 +861,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-882"
+      "slot_id": "SLOT-L1-EL0026"
     },
     {
       "demo": true,
@@ -891,7 +894,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-849"
+      "slot_id": "SLOT-L2-EL0027"
     },
     {
       "demo": true,
@@ -924,7 +927,7 @@
       "architect_review_flag": true,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L3-2322"
+      "slot_id": "SLOT-L3-EL0028"
     },
     {
       "demo": true,
@@ -957,7 +960,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L1-856"
+      "slot_id": "SLOT-L1-EL0029"
     },
     {
       "demo": true,
@@ -990,7 +993,7 @@
       "architect_review_flag": false,
       "architect_notes": "",
       "agent_notes": "",
-      "slot_id": "SLOT-L2-2437"
+      "slot_id": "SLOT-L2-EL0030"
     }
   ]
 }

@@ -22,6 +22,8 @@ import urllib.error
 from datetime import datetime, timezone
 from pathlib import Path
 
+from _slots import regenerate_slots
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 ELEMENTS_FILE = DATA_DIR / "elements.json"
@@ -156,6 +158,9 @@ def add_element(new_element, commit=True):
     # Save
     save_elements(db)
     print(f"Saved {element_id} to {ELEMENTS_FILE}")
+
+    # Repack the wall so the new element gets a committed slot.
+    regenerate_slots()
 
     # Git commit and push
     if commit:

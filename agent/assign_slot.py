@@ -19,6 +19,8 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
+from _slots import regenerate_slots
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ELEMENTS_FILE = REPO_ROOT / "data" / "elements.json"
 SLOTS_FILE = REPO_ROOT / "data" / "slots.json"
@@ -186,6 +188,11 @@ def main():
         save_json(SLOTS_FILE, slots_db)
         print(f"{args.element_id}: Unassigned from {old_slot_id}")
 
+        # Repack — the unassigned element is still eligible for a committed
+        # slot (status was ALLOCATED/INSTALLED) unless its status was changed
+        # by a different flow. Regenerate so the wall reflects reality.
+        regenerate_slots()
+
         if not args.no_commit:
             os.chdir(REPO_ROOT)
             subprocess.run(["git", "add", "data/"], check=True)
@@ -240,6 +247,11 @@ def main():
     save_json(ELEMENTS_FILE, db)
     save_json(SLOTS_FILE, slots_db)
     print(f"{args.element_id}: Assigned to {args.slot_id} (face: {slot['face']}, zone: {slot['fire_zone']})")
+
+    # Repack — the packer will honour the story hint from the slot_id just
+    # written, but the exact position is fluid (committed slots are auto-laid
+    # out). Manual assignment pins the story, not the pixel.
+    regenerate_slots()
 
     if not args.no_commit:
         try:
